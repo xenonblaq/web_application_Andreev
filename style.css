@@ -13,7 +13,7 @@ body {
 }
 
 .container {
-    max-width: 1440px;
+    max-width: 1600px;
     margin: 0;
     padding-top: 7px;
     position: relative
@@ -25,8 +25,7 @@ body {
     justify-content: space-between;
     width: 1358px;
 }
-.logo {
-}
+
 
 .first_1 {
     display: flex;
@@ -47,7 +46,7 @@ body {
     font-size: 17px;
 }
 
-.pusto {
+.theory {
     color: white;
     text-decoration: none;
     font-size: 17px;
@@ -77,21 +76,7 @@ body {
     margin-bottom: 30px;
     line-height: 25px;
 }
-/* .autro {
-    color: white;
-    font-weight: 900;
-    font-size: 24;
-    align-items: center;
 
-    &::after {
-        content: '';
-        display: block;
-        background: url(/img/кнопка.svg);
-        width: 95px;
-        height: 95px;
-        margin-left: 100px;
-    }
-} */
 .third {
     display: flex;
     align-items: center;
@@ -104,8 +89,6 @@ body {
     font-weight: 900;
     font-size: 24;
     align-items: center;
-}
-.knopka {
 }
 
 .title_2 {
@@ -123,8 +106,7 @@ body {
     justify-content: space-between;
     width: 1160px;
 }
-.cena {
-}
+
 .graph {
     color: #B1C2FF;
     font-weight: 700;
@@ -134,8 +116,7 @@ body {
     color: white;
     font-size: 18;
 }
-.gist {
-}
+
 .profits {
     color: #B1C2FF;
     font-weight: 700;
@@ -145,8 +126,7 @@ body {
     color: white;
     font-size: 18;
 }
-.tree {
-}
+
 .tree_ {
     color: #B1C2FF;
     font-weight: 700;
@@ -195,3 +175,54 @@ body {
     top:83%;
     left: 70%;
 }
+
+.title_3 {
+    text-align: center;
+    color: white;
+    font-weight: 400;
+    font-size: 48;
+    margin-bottom: 30px;
+    line-height: 45px;
+}
+
+  .inputs {
+    display: grid;
+    grid-template-columns: auto 200px 200px auto;
+    gap: 30px; 
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+  }
+
+  .inputs input {
+    background-color:#B1C2FF; 
+    border: none; 
+    border-radius: 5px;
+    height: 25px; 
+  }
+
+  .inputs label {
+    color: white;
+    border: none;
+    height: 25px;
+  }
+
+  .start-buttons {
+    display: grid;
+    place-items: center;
+    width: 100%; 
+    margin: 20px 0;
+  }
+  
+  .start-button {
+    background-image: url('/img/start.svg'); 
+    background-size: cover; 
+    color: white;
+    padding: 10px 20px; 
+    border-radius: 15px; 
+    border: none;
+    cursor: pointer;
+    font-size: 40px; 
+    font-family: 'Comfortaa';
+    outline: none;
+  }
