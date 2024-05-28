@@ -5,9 +5,9 @@ class Company {
         this.stock_number = k;
         this.buy_price = buy;
         this.sell_price = sell;
-        this.liquidity = r;
+        this.liquidity = [r];
         this.vol = vol;
-        this.spread = buy - sell;
+        this.spread = buy - sell; // поменять, чтобы не надо было вводить sell
         this.news_background = news
         this.news = [news]
     }
@@ -25,66 +25,77 @@ class Company {
 
     news_maker() {
         let news = Math.random();
-        this.news.push(news);
+        this.news.push(news.toFixed(2));
         this.news_background = 0
-        for (let i = 0; i < this.news.length(); i++) {
-            this.news_background += slice[i] * Math.exp(0.9(i - this.news.length() + 1));
+        for (let i = 0; i < this.news.length; i++) {
+            this.news_background += this.news[i] * Math.exp(0.9 * (i - this.news.length + 1));
         }
     }
 
     change_parametrs(buy_counter, sell_counter, deal_counter, step) {
         if (buy_counter > sell_counter) {
-            this.buy_price += Math.exp(buy_counter / (2 * sell_counter + 0.001));
+            this.buy_price = Math.min(this.buy_price + Math.exp(buy_counter / (2 * sell_counter + 0.001)), 
+            this.buy_price * 2);
         } else {
-            this.buy_price -= Math.exp(sell_counter / (2 * buy_counter + 0.001));
+            this.buy_price = Math.max(this.buy_price - Math.exp(sell_counter / (2 * buy_counter + 0.001)), 
+            this.buy_price / 2);
         }
-        this.graph_prices.push[this.buy_price];
-        this.ret.push(Math.LN2(this.graph_prices[-1] / this.graph_prices[-2]));
-        if (step % 7 == 0) {
-            this.volatility();
-        }
+        this.graph_prices.push(this.buy_price);
         let r = deal_counter / this.stock_number;
-        if (r > this.liquidity) {
-            this.liquidity = r;
+        this.liquidity.push(r);
+        if (r > this.liquidity[this.liquidity.length - 2]) {
             this.spread -= Math.pow(0.5, 50 * r);
         } else {
-            this.liquidity = r;
             this.spread += Math.pow(0.5, 50 * r);
         }
         this.sell_price = this.buy_price - this.spread;
+        this.ret.push(Math.log(this.graph_prices[this.graph_prices.length - 1] / this.graph_prices[this.graph_prices.length - 2]));
+        if ((step + 1) % 7 == 0) {
+            this.volatility();
+        }
         this.news_maker();
     }
 }
 
 class Player {
     constructor(k, n, buy) {
-        this.parametrs = this.subjective_parametrs();
+        this.weights = new Map();
         this.profit = - k * buy / n;
+        this.parametrs = this.creating_subjective_parametrs();
         this.capital = k / n;
         this.graph_profits = [this.profit];
-        this.weights = []
     }
 
-    subjective_parametrs() {
-       let weights;
-       let parametrs = new Array(5);
-       parametrs[0] = Math.random(); // Риск
-       parametrs[1] = this.profit; // Текущая прибыль
-       parametrs[2] = Math.random() * 9.8 + 0.2; // Опыт в годах
-       parametrs[3] = Math.random(); // отношение к сектору
-       parametrs[4] = Math.random(); // иное
-       return parametrs;
+    creating_subjective_parametrs() {
+        let parametrs = new Array(3);
+        let risk = Math.random() * 0.8 + 0.1; // Риск профиль инвестора
+        if (risk > 0.5) {
+            this.weights.set("return", Math.random() * (1 - risk) + risk);
+            let a = Math.random() * (1 - this.weights.get("return"));
+            let b = 1 - this.weights.get("return") - a;
+            this.weights.set("liquidity",Math.max(a, b));
+            this.weights.set("volatility", 1 - this.weights.get("return") - this.weights.get("liquidity")); 
+        } else { 
+            this.weights.set("volatility", Math.random() * (1 - (1 - risk)) + 1 - risk);
+            let a = Math.random() * (1 - this.weights.get("volatility"));
+            let b = 1 - this.weights.get("volatility") - a;
+            this.weights.set("liquidity", Math.max(a, b));
+            this.weights.set("return", 1 - this.weights.get("volatility") - this.weights.get("liquidity"));
+        }
+        parametrs[0] = risk;
+        parametrs[1] = this.profit; // Текущая прибыль
+        parametrs[2] = Math.random() * 0.8 + 0.1; // иное
+        return parametrs;
     }
 
     changing_parametrs() {
-
+        this.parametrs[2] = Math.random() * 0.8 + 0.1;
     }
 
-    scoring(factors, ret, vol, liq, news) {
-        let score = 0.2 * (ret + vol + liq) + 0.3 * news; // нужно нормализовать волатильность и ликвидность
-        for (let i = 0; i != 5; i++) {
-            score += 0.5 * parseFloat(factors[i]);
-        }
+    scoring(factors, ret, liq, vol, news) {
+        let score = 0.4 * (0.75 * factors[0] + 0.15 * factors[1] + 0.1 * factors[2])
+        + 0.3 * (this.weights.get("return") * ret[ret.length - 1] + this.weights.get("volatility") * vol
+        + this.weights.get("liquidity") * liq[liq.length - 1]) + 0.3 * news; // нужно нормализовать волатильность и доходность
         return score;
     }
 
@@ -96,13 +107,13 @@ export class Model {
         this.company = new Company(k, buy, sell, r, news, ret, vol);
         this.players_number = n;
         this.players = this.create_players()
-        this.factors = [[0.1, 0.9], [-2 * k * buy / n, 2 * k * sell / n], [0.3, 9], [0.8, 0.3], [0.15, 0.97]]
+        this.factors = [[0.1, 0.9], [-2 * k * buy / n, 2 * k * sell / n], [0.1, 0.9]]
     }
 
     create_players() {
         var players = new Array(this.players_number);
         for (let i = 0; i != this.players_number; i++) {
-            players[i] = new Player(this.company.stock_number, this.company.players_number, this.company.buy_price);
+            players[i] = new Player(this.company.stock_number, this.players_number, this.company.buy_price);
         }
         return players;
     }
@@ -132,7 +143,7 @@ export class Model {
         const sumXY = factor.reduce((acc, val, i) => acc + val * normalized[i], 0);
         const sumXX = factor.reduce((acc, val) => acc + val * val, 0);
         // Вычисляем наклон (m) и точку пересечения с осью Y (b)
-        const m = (this.players_number * sumXY - sumX * sumY) / (this.players_number * sumXX - sumX * sumX);
+        const m = (this.players_number * sumXY - sumX * sumY) / (this.players_number * sumXX - sumX * sumX + 0.000001);
         const b = (sumY - m * sumX) / this.players_number;
         for (let i = 0; i != this.players_number; i++) {
             desire[i] = (m * indexes[i] + b).toFixed(2);
@@ -141,20 +152,21 @@ export class Model {
     }
 
     scoring() {
-        var final_recomend = new Array(this.players_number);
-        var scoring_matrix = new Array(5);
-        for (let i = 0; i != 5; i++) {
+        var final_recomend = new Map();
+        var scoring_matrix = new Array(3);
+        for (let i = 0; i != 3; i++) {
             scoring_matrix[i] = new Array(this.players_number);
             for (let j = 0; j != this.players_number; j++) {
                 scoring_matrix[i][j] = this.players[j].parametrs[i];
             }
         }
-        for (let i = 0; i != 5; i++) {
-            scoring_matrix[i] = this.desirability_regres_func(scoring_matrix[i], this.factors[i][0], this.factors[i][1], this.factors[i][2]);
+        for (let i = 0; i != 3; i++) {
+            scoring_matrix[i] = this.desirability_regres_func(scoring_matrix[i], this.factors[i][0], this.factors[i][1]);
         }
         for (let i = 0; i != this.players_number; i++) {
-            final_recomend[i] = [this.players[i].scoring(scoring_matrix.map(row => row[i]), this.company.ret[-1],
-            this.company.liquidity, this.company.vol, this.company.news_background), i];
+            final_recomend.set(i, this.players[i].scoring(scoring_matrix.map(row => row[i]), this.company.ret,
+            this.company.liquidity, this.company.vol, this.company.news_background));
+            this.players[i].changing_parametrs();
         }
         return final_recomend;
     }
@@ -162,28 +174,29 @@ export class Model {
     deal(final_recomend) {
         var deque_sell = [];
         var deque_buy = [];
-        final_recomend.sort();
-        for (let i = 0; i != this.players_number; i++) {
-            if (final_recomend[i][0] >= 5.04) {
-                deque_buy.push(final_recomend[i][1]);
-            } else if (final_recomend[i][0] <= 2.96 && this.players[i].capital > 0) {
-                deque_sell.push(final_recomend[i][1]);
+        final_recomend = new Map([...final_recomend.entries()].sort((a, b) => a[1] - b[1]));
+        for (let player of final_recomend.keys()) {
+            if (final_recomend.get(player) >= 0.6) {
+                deque_buy.push(player);
+            } else if (final_recomend.get(player) <= 0.4 && this.players[player].capital > 0) {
+                deque_sell.push(player);
             }
         }
         let idx_sell = 0;
-        let idx_buy = deque_buy.length();
-        while (idx_buy != 0 && idx_sell != deque_sell.length()) {
-            this.players[deque_buy(idx_buy)].capital += this.players[deque_sell(idx_sell)].capital;
-            this.players[deque_buy(idx_buy)].profit -= this.company.buy_price * this.players[deque_sell(idx_sell)].capital;
-            this.players[deque_sell(idx_sell)].profit += this.company.sell_price * this.players[deque_sell(idx_sell)].capital;
-            this.players[deque_buy(idx_buy)].graph_profits.push(this.players[deque_buy(idx_buy)].profit);
-            this.players[deque_sell(idx_sell)].graph_profits.push(this.players[deque_sell(idx_sell)].profit);
-            deal_counter += this.players[deque_sell(idx_sell)].capital;
-            this.players[deque_sell(idx_sell)].capital = 0;
+        let idx_buy = deque_buy.length - 1;
+        let deal_counter = 0;
+        while (idx_buy >= 0 && idx_sell != deque_sell.length) {
+            this.players[deque_buy[idx_buy]].capital += this.players[deque_sell[idx_sell]].capital;
+            this.players[deque_buy[idx_buy]].profit -= this.company.buy_price * this.players[deque_sell[idx_sell]].capital;
+            this.players[deque_sell[idx_sell]].profit += this.company.sell_price * this.players[deque_sell[idx_sell]].capital;
+            this.players[deque_buy[idx_buy]].graph_profits.push(this.players[deque_buy[idx_buy]].profit);
+            this.players[deque_sell[idx_sell]].graph_profits.push(this.players[deque_sell[idx_sell]].profit);
+            deal_counter += this.players[deque_sell[idx_sell]].capital;
+            this.players[deque_sell[idx_sell]].capital = 0;
             idx_buy -= 1;
-            idx_sell = 1;
+            idx_sell += 1;
         }
-        return [deal_counter, deque_buy.length(), deque_sell.length()];
+        return [Math.min(deque_buy.length, deque_sell.length), deque_buy.length, deque_sell.length];
     }
 
     change_price(final_recomend, step) {

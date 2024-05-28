@@ -207,14 +207,14 @@ body {
     height: 25px;
   }
 
-  .start-buttons {
+  .start_button {
     display: grid;
     place-items: center;
     width: 100%; 
     margin: 20px 0;
   }
   
-  .start-button {
+  .button {
     background-image: url('/img/start.svg'); 
     background-size: cover; 
     color: white;
@@ -222,7 +222,44 @@ body {
     border-radius: 15px; 
     border: none;
     cursor: pointer;
-    font-size: 40px; 
+    font-size: 20px; 
     font-family: 'Comfortaa';
     outline: none;
   }
+
+  canvas { 
+    display: block;
+	/* background-color: #B1C2FF; */
+    border-radius: 15px;
+  }
+
+.toggle {
+    background: none;
+    color: white;
+    padding: 10px 20px; 
+    border-radius: 15px; 
+    border: none;
+    cursor: pointer;
+    font-size: 20px; 
+    font-family: 'Comfortaa';
+    outline: none;
+}
+
+.content {
+    display: none;
+    margin-top: 10px;
+    margin-left: 10px;
+    line-height: 1.5;
+}
+
+.controls {
+    margin-bottom: 10px;
+}
+
+.text_chart {
+    color: white;
+    display: flex;
+    gap: 30px; 
+    align-items: flex-start;
+    margin-top: 20px;
+}

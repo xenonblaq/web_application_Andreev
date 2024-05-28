@@ -33,30 +33,45 @@
         </h1>
         <div class="inputs">
             <label for="days">количество дней</label>
-            <input type="number" id="days" placeholder="days">
-            <input type="number" id="volatility" placeholder="volatility">
+            <input type="number" id="days" placeholder="days" value=100>
+            <input type="number" id="volatility" placeholder="volatility" value=0.1>
             <label for="volatility">текущая волотильность</label>
           
             <label for="players">количество игроков</label>
-            <input type="number" id="players" placeholder="players">
-            <input type="number" id="return" placeholder="return">
+            <input type="number" id="players" placeholder="players" value=30>
+            <input type="number" id="return" placeholder="return" value=0.9>
             <label for="return">текущая доходность</label>
           
             <label for="stock">количество акций</label>
-            <input type="number" id="stock" placeholder="stock">
-            <input type="number" id="liquidity" placeholder="liquidity">
+            <input type="number" id="stock" placeholder="stock" value=120>
+            <input type="number" id="liquidity" placeholder="liquidity" value=0.95>
             <label for="liquidity">текущая ликвидность</label>
           
             <label for="news">новостной фон</label>
-            <input type="number" id="news" placeholder="news">
-            <input type="number" id="price" placeholder="price">
+            <input type="number" id="news" placeholder="news" value=0.9>
+            <input type="number" id="price" placeholder="price" value=300>
             <label for="price">текущая цена покупки</label>
         </div>    
-        <div class="start-buttons">
-            <button class="start-button">начать</button>
+        <div class="start_button">
+            <button class="button" id="start_button">начать</button>
         </div>
-        <!-- <canvas id="myChart" width="400" height="200"></canvas>
-        <script src="browser_game.js"></script> -->
+        <button class="toggle">▼ Цена акции / новостной фон</button>
+        <div class="content">
+            <div class="controls">
+              <button class="button" id="start_1">начать</button>
+              <button class="button" id="pause_1">пауза</button>
+              <button class="button" id="result_1">результат</button>
+            </div>
+            <div class="text_chart">
+              <canvas id="price_chart" width="600" height="300"></canvas>
+              <div id="price_text"></div>
+            </div>
+            <div class="text_chart">
+              <canvas id="news_chart" width="600" height="300"></canvas>
+              <div id="news_text"></div>
+            </div>
+        </div>
+        <script type="module" src="browser_game.js"></script>
     </div>
 </body>
 </html>
