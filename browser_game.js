@@ -30,26 +30,44 @@ const games = [
             }
         ]
     },
+    {
+        start: 'start_2',
+        pause: 'pause_2',
+        result: 'result_2',
+        charts: [
+            {
+                canvas: 'liq_chart',
+                text: 'liq_text',
+                label: ['Ликвидность', 'Акции в обороте ко всем', 'Дни'],
+                X: [],
+                Y: [],
+                index: 0,
+                interval: null,
+                chart: null,
+                pause: false
+            },
+            {
+                canvas: 'deal_chart',
+                text: 'deal_text',
+                label: ['Количество акций в обороте', 'Количество акций', 'Дни'],
+                X: [],
+                Y: [],
+                index: 0,
+                interval: null,
+                chart: null,
+                pause: false
+            }
+        ]
+    },
     // {
-    //     start: 'start_2',
-    //     pause: 'pause_2',
-    //     result: 'result_2',
+    //     start: 'start_3',
+    //     pause: 'pause_3',
+    //     result: 'result_3',
     //     charts: [
     //         {
-    //             canvas: 'liquidity',
-    //             text: 'liquidity_text',
-    //             label: 'Ликвидность',
-    //             X: [],
-    //             Y: [],
-    //             index: 0,
-    //             interval: null,
-    //             chart: null,
-    //             pause: false
-    //         },
-    //         {
-    //             canvas: 'deal_counter',
-    //             text: 'deal_text',
-    //             label: 'Количество сделок в обороте',
+    //             canvas: 'profit_chart',
+    //             text: 'profit_text',
+    //             label: ['Ликвидность', 'Акции в обороте ко всем', 'Дни'],
     //             X: [],
     //             Y: [],
     //             index: 0,
@@ -84,6 +102,11 @@ class Browser_game {
         this.simulation.run();
         this.games[0].charts[0].Y = this.simulation.company.graph_prices;
         this.games[0].charts[1].Y = this.simulation.company.news;
+        this.games[1].charts[0].Y = this.simulation.company.liquidity;
+        this.games[1].charts[1].Y = this.simulation.deal_counter;
+        // for (let i = 0; i < this.simulation.players_number; i++) {
+        //     this.games[2].charts[0].Y.push(this.simulation.players[i].graph_profits);
+        // }
     }
 
     scatter_chart(canvas, label, X, Y) {
@@ -129,7 +152,11 @@ class Browser_game {
             console.log(canvas);
             const text = document.getElementById(settings.text);
             text.innerText = settings.label[0] + ':\n'; 
-            settings.chart = this.scatter_chart(canvas, settings.label, settings.X, settings.Y);
+            if (settings.canvas == "profit_chart") {
+                settings.chart = this.hist_chart(canvas, settings.label, settings.X, settings.Y);
+            } else {
+                settings.chart = this.scatter_chart(canvas, settings.label, settings.X, settings.Y);
+            }
             settings.interval = setInterval(() => {
                 if (!settings.pause) {
                     if (settings.index < this.days.length - 1) {
@@ -192,14 +219,24 @@ var game;
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    const toggle = document.querySelector('.toggle');
-    const content = document.querySelector('.content');
+    const toggles = document.querySelectorAll('.toggle');
+    const contents = document.querySelectorAll('.content');
 
-    content.style.display = 'none';
+    contents.forEach(content => {
+        content.style.display = 'none';
+    });
 
-    toggle.addEventListener('click', () => {
-        content.style.display = content.style.display === 'none' ? 'block' : 'none';
-        toggle.textContent = content.style.display === 'none' ? '▼ Цена акции / новостной фон' : '▲ Цена акции / новостной фон';
+    let text = [];
+    toggles.forEach((button) => {
+        text.push(button.textContent.substring(1));
+    });
+
+    toggles.forEach((button, index) => {
+        button.addEventListener('click', () => {
+            const content = contents[index];
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+            button.textContent = content.style.display === 'none' ? '▼' + text[index] : '▲' + text[index];
+        });
     });
 
     document.getElementById('start_button').addEventListener('click', () => {

@@ -103,6 +103,7 @@ class Player {
 
 export class Model {
     constructor(days, n, k, buy, sell, r, news, ret, vol) {
+        this.deal_counter = [];
         this.steps = days;
         this.company = new Company(k, buy, sell, r, news, ret, vol);
         this.players_number = n;
@@ -196,12 +197,13 @@ export class Model {
             idx_buy -= 1;
             idx_sell += 1;
         }
-        return [Math.min(deque_buy.length, deque_sell.length), deque_buy.length, deque_sell.length];
+        this.deal_counter.push(deal_counter);
+        return [deque_buy.length, deque_sell.length];
     }
 
     change_price(final_recomend, step) {
         var deal = this.deal(final_recomend);
-        let news = this.company.change_parametrs(deal[1], deal[2], deal[0], step);
+        let news = this.company.change_parametrs(deal[0], deal[1], this.deal_counter[this.deal_counter.length - 1], step);
     }
 
     run() {
