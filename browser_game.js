@@ -82,7 +82,7 @@ const games = [
 class Browser_game {
     
     constructor(days, n, k, buy, r, news, vol, ret) {
-        this.simulation = new Model(days, n, k, buy, buy - 10, r, news, vol, ret);
+        this.simulation = new Model(days, n, k, buy, r, news, vol, ret);
         this.days = [...Array(days).keys()].map(x => x + 1);
         this.games = games;
         this.data();
