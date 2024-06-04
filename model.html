@@ -29,26 +29,39 @@
           </a>
         </div>
         <h1 class="title_3">
+          Обучающая симуляция
+        </h1>
+        <h1 class="instruction_text">
+          Перед началом работы рекомендуем Вам зайти во вкладку "инструкция". <br>
+          Вам предлагается пройти этап обучающей симуляции для 
+          понимания работы модели <br> и первого погружения в мир акций.
+          Нажмите кнопку "начать" или пролистайте <br> страницу до введения 
+          параметров для пропуска обучения. 
+        </h1>
+        <div class="start_button">
+          <button class="button" id="start_training">начать</button>
+        </div>
+        <h1 class="title_3">
             Введите параметры <br>модели:
         </h1>
         <div class="inputs">
             <label for="days">количество дней</label>
-            <input type="number" id="days" placeholder="days" value=100>
-            <input type="number" id="volatility" placeholder="volatility" value=0.1>
+            <input type="number" id="days" placeholder="days" value=50>
+            <input type="number" id="volatility" placeholder="volatility" value=0.6>
             <label for="volatility">текущая волотильность</label>
           
             <label for="players">количество игроков</label>
-            <input type="number" id="players" placeholder="players" value=30>
-            <input type="number" id="return" placeholder="return" value=0.9>
+            <input type="number" id="players" placeholder="players" value=10>
+            <input type="number" id="return" placeholder="return" value=0.01>
             <label for="return">текущая доходность</label>
           
             <label for="stock">количество акций</label>
             <input type="number" id="stock" placeholder="stock" value=120>
-            <input type="number" id="liquidity" placeholder="liquidity" value=0.95>
+            <input type="number" id="liquidity" placeholder="liquidity" value=0.01>
             <label for="liquidity">текущая ликвидность</label>
           
             <label for="news">новостной фон</label>
-            <input type="number" id="news" placeholder="news" value=0.9>
+            <input type="number" id="news" placeholder="news" value=0.01>
             <input type="number" id="price" placeholder="price" value=300>
             <label for="price">текущая цена покупки</label>
         </div>    
@@ -86,7 +99,27 @@
               <canvas id="deal_chart" width="600" height="300"></canvas>
               <div id="deal_text"></div>
             </div>
+        </div> <br>
+        <button class="toggle">▼ Доходность акции / Волатильность </button>
+        <div class="content">
+            <div class="controls">
+              <button class="button" id="start_3">начать</button>
+              <button class="button" id="pause_3">пауза</button>
+              <button class="button" id="result_3">результат</button>
+            </div>
+            <div class="text_chart">
+              <canvas id="return_chart" width="600" height="300"></canvas>
+              <div id="return_text"></div>
+            </div>
+            <div class="text_chart">
+              <canvas id="vol_chart" width="600" height="300"></canvas>
+              <div id="vol_text"></div>
+            </div>
         </div>
+        <h1 class="instruction_text">
+          Надеемся, Вам понравилось наше приложение. Если у вас возникли вопросы, замечания или предложения, <br>
+          сообщите нам об этом во вкладке "поддержка" в начале страницы. <br> До новых встреч!
+        </h1>
         <script type="module" src="browser_game.js"></script>
     </div>
 </body>

@@ -263,3 +263,12 @@ body {
     align-items: flex-start;
     margin-top: 20px;
 }
+
+.instruction_text {
+    text-align: center;
+    color: white;
+    font-weight: 200;
+    font-size: 20px;
+    margin-bottom: 30px;
+    line-height: 45px;
+}

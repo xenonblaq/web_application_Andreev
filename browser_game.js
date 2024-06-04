@@ -1,5 +1,21 @@
 import {Model} from './model.js';
 
+const preset = {
+    bad: {
+        players: [0.1, 0.6, 0.2, 0.4, 0.8, 0.3, 0.15, 0.9, 0.25, 0.7],
+        weigths: [[0.7, 0.2, 0.1], [0.1, 0.2, 0.7]],
+        news: [0.1, 0.3, 0.25, 0.2, 0.8, 0.7, 0.9, 0.65, 0.3, 0.2],
+        parametrs: [10, 10, 100, 300, 0.1, 0.05, 0.35, -0.1]
+    },
+    good: {
+        players: [0.1, 0.6, 0.2, 0.4, 0.8, 0.3, 0.15, 0.9, 0.25, 0.7],
+        weigths: [[0.7, 0.2, 0.1], [0.1, 0.2, 0.7]],
+        news: [0.9, 0.65, 0.7, 0.8, 0.2, 0.3, 0.25, 0.1, 0.7, 0.8],
+        parametrs: [10, 10, 100, 300, 0.9, 0.95, 0.02, 0.3]
+    }
+}
+
+
 const games = [
     {
         start: 'start_1',
@@ -59,24 +75,35 @@ const games = [
             }
         ]
     },
-    // {
-    //     start: 'start_3',
-    //     pause: 'pause_3',
-    //     result: 'result_3',
-    //     charts: [
-    //         {
-    //             canvas: 'profit_chart',
-    //             text: 'profit_text',
-    //             label: ['Ликвидность', 'Акции в обороте ко всем', 'Дни'],
-    //             X: [],
-    //             Y: [],
-    //             index: 0,
-    //             interval: null,
-    //             chart: null,
-    //             pause: false
-    //         }
-    //     ]
-    // }
+    {
+        start: 'start_3',
+        pause: 'pause_3',
+        result: 'result_3',
+        charts: [
+            {
+                canvas: 'return_chart',
+                text: 'return_text',
+                label: ['Доходность', 'Доходность акции', 'Дни'],
+                X: [],
+                Y: [],
+                index: 0,
+                interval: null,
+                chart: null,
+                pause: false
+            },
+            {
+                canvas: 'vol_chart',
+                text: 'vol_text',
+                label: ['Волатильность', 'Недельная волотильность', 'Дни'],
+                X: [],
+                Y: [],
+                index: 0,
+                interval: null,
+                chart: null,
+                pause: false
+            }
+        ]
+    }
 ];
 
 class Browser_game {
@@ -104,9 +131,8 @@ class Browser_game {
         this.games[0].charts[1].Y = this.simulation.company.news;
         this.games[1].charts[0].Y = this.simulation.company.liquidity;
         this.games[1].charts[1].Y = this.simulation.deal_counter;
-        // for (let i = 0; i < this.simulation.players_number; i++) {
-        //     this.games[2].charts[0].Y.push(this.simulation.players[i].graph_profits);
-        // }
+        this.games[2].charts[0].Y = this.simulation.company.ret;
+        this.games[2].charts[1].Y = this.simulation.company.vol;
     }
 
     scatter_chart(canvas, label, X, Y) {
@@ -152,11 +178,7 @@ class Browser_game {
             console.log(canvas);
             const text = document.getElementById(settings.text);
             text.innerText = settings.label[0] + ':\n'; 
-            if (settings.canvas == "profit_chart") {
-                settings.chart = this.hist_chart(canvas, settings.label, settings.X, settings.Y);
-            } else {
-                settings.chart = this.scatter_chart(canvas, settings.label, settings.X, settings.Y);
-            }
+            settings.chart = this.scatter_chart(canvas, settings.label, settings.X, settings.Y);
             settings.interval = setInterval(() => {
                 if (!settings.pause) {
                     if (settings.index < this.days.length - 1) {
@@ -164,9 +186,20 @@ class Browser_game {
                         settings.chart.data.datasets[0].data = settings.X.slice(0, settings.index + 1).map((x, index) => ({ x, y: settings.Y[index] }));
                         settings.chart.update();
                         if (settings.index > 0) {
-                            text.innerText += settings.Y[settings.index] - settings.Y[settings.index - 1] + ' ';
+                            if (settings.Y[settings.index] - settings.Y[settings.index - 1] < -0.4 && settings.Y[settings.index] - settings.Y[settings.index - 1] != 0 && settings.canvas != 'price_chart') {
+                                let value = String((settings.Y[settings.index] - settings.Y[settings.index - 1]).toFixed(2)) + ' ';
+                                let string = `<span style="color: red;">${value}</span> `;
+                                text.innerHTML += string;
+                            } else if (settings.Y[settings.index] - settings.Y[settings.index - 1] > 0.4 && settings.canvas != 'price_chart') {
+                                let value = String((settings.Y[settings.index] - settings.Y[settings.index - 1]).toFixed(2)) + ' ';
+                                let string = `<span style="color: green;">${value}</span> `;
+                                text.innerHTML += string;
+                            } else {
+                                let value = String((settings.Y[settings.index] - settings.Y[settings.index - 1]).toFixed(2)) + ' ';
+                                text.innerHTML += value;
+                            }
                         } else {
-                            text.innerText += settings.Y[settings.index];
+                            text.innerHTML += settings.Y[settings.index].toFixed(2);
                         }
                     } else {
                         clearInterval(settings.interval);
