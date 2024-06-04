@@ -3,15 +3,28 @@ import {Model} from './model.js';
 const preset = {
     bad: {
         players: [0.1, 0.6, 0.2, 0.4, 0.8, 0.3, 0.15, 0.9, 0.25, 0.7],
-        weigths: [[0.7, 0.2, 0.1], [0.1, 0.2, 0.7]],
-        news: [0.1, 0.3, 0.25, 0.2, 0.8, 0.7, 0.9, 0.65, 0.3, 0.2],
-        parametrs: [10, 10, 100, 300, 0.1, 0.05, 0.35, -0.1]
+        weights: [[0.7, 0.2, 0.1], [0.1, 0.2, 0.7]],
+        news: [0.1, 0.3, 0.25, 0.2, 0.15, 0.2, 0.3, 0.8, 0.7, 0.9, 0.65, 0.3, 0.2, 0.1,
+             0.05, 0.3, 0.8, 0.9, 0.95, 0.9, 0.2, 0.1, 0.2, 0.1, 0.01],
+        days: 25,
+        n: 10,
+        k: 100,
+        buy: 300,
+        r: 0.1,
+        vol: 0.35,
+        ret: -0.1
     },
     good: {
         players: [0.1, 0.6, 0.2, 0.4, 0.8, 0.3, 0.15, 0.9, 0.25, 0.7],
-        weigths: [[0.7, 0.2, 0.1], [0.1, 0.2, 0.7]],
-        news: [0.9, 0.65, 0.7, 0.8, 0.2, 0.3, 0.25, 0.1, 0.7, 0.8],
-        parametrs: [10, 10, 100, 300, 0.9, 0.95, 0.02, 0.3]
+        weights: [[0.7, 0.2, 0.1], [0.1, 0.2, 0.7]],
+        news: [0.95, 0.65, 0.7, 0.8, 0.2, 0.3, 0.25, 0.1, 0.7, 0.8],
+        days: 20,
+        n: 10,
+        k: 100,
+        buy: 300,
+        r: 0.9,
+        vol: 0.02,
+        ret: 0.3
     }
 }
 
@@ -108,8 +121,8 @@ const games = [
 
 class Browser_game {
     
-    constructor(days, n, k, buy, r, news, vol, ret) {
-        this.simulation = new Model(days, n, k, buy, r, news, vol, ret);
+    constructor(days, n, k, buy, r, news, vol, ret, preset) {
+        this.simulation = new Model(days, n, k, buy, r, news, vol, ret, preset);
         this.days = [...Array(days).keys()].map(x => x + 1);
         this.games = games;
         this.data();
@@ -281,6 +294,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let news = parseFloat(document.getElementById('news').value);
         let vol = parseFloat(document.getElementById('volatility').value);
         let ret = parseFloat(document.getElementById('return').value);
-        game = new Browser_game(days, n, k, buy, r, news, vol, ret);
+        // game = new Browser_game(days, n, k, buy, r, news, vol, ret, {});
+        game = new Browser_game(preset.bad.days, preset.bad.n, preset.bad.k, preset.bad.buy, 
+            preset.bad.r, preset.bad.news[0], preset.bad.vol, preset.bad.ret, preset.bad);
     });
 });

@@ -1,5 +1,10 @@
 class Company {
-    constructor(k, buy, r, news, ret, vol) {
+    constructor(k, buy, r, news, ret, vol, preset) {
+        this.preset = preset
+        this.training_flag = false;
+        if (Object.keys(this.preset).length != 0) {
+            this.training_flag = true;
+        }
         this.capital_cost = buy * 0.1;
         this.graph_prices = [buy];
         this.ret = [ret];
@@ -9,8 +14,8 @@ class Company {
         this.sell_price = buy - this.spread;
         this.liquidity = [r];
         this.vol = [vol];
-        this.news_background = news
-        this.news = [news]
+        this.news_background = news;
+        this.news = [news];
     }
 
 
@@ -24,20 +29,24 @@ class Company {
         this.vol.push(Math.sqrt(variations.reduce((accumulator, currentValue) => accumulator + currentValue, 0) / 6));
     }
 
-    news_maker() {
-        let P = Math.random();
+    news_maker(step) {
         let news = 0;
-        if (this.news_background > 0.6) {
-            if (P > 0.1) {
-                news = Math.random() * (1 - 0.4) + 0.4;
-            } else {
-                news = Math.random() * (0.6 - 0.1) + 0.1;
-            }
+        if (this.training_flag) {
+            news = this.preset.news[step];
         } else {
-            if (P > 0.1) {
-                news = Math.random() * (0.4 - 0.1) + 0.1;
+            let P = Math.random();
+            if (this.news_background > 0.6) {
+                if (P > 0.1) {
+                    news = Math.random() * (1 - 0.4) + 0.4;
+                } else {
+                    news = Math.random() * (0.6 - 0.1) + 0.1;
+                }
             } else {
-                news = Math.random() * (1 - 0.5) + 0.5;
+                if (P > 0.1) {
+                    news = Math.random() * (0.4 - 0.1) + 0.1;
+                } else {
+                    news = Math.random() * (1 - 0.5) + 0.5;
+                }
             }
         }
         this.news.push(news.toFixed(2));
@@ -64,20 +73,38 @@ class Company {
         } else {
             this.vol.push(this.vol[this.vol.length - 1]);
         }
-        this.news_maker();
+        this.news_maker(step);
     }
 }
 
 class Player {
-    constructor(k, n, buy) {
+    constructor(k, n, buy, preset, step) {
+        this.preset = preset;
+        this.training_flag = false;
+        if (Object.keys(this.preset).length != 0) {
+            this.training_flag = true;
+        }
         this.weights = new Map();
         this.profit = - k * buy / n;
-        this.risk = this.creating_subjective_parametrs();
+        this.risk = this.creating_subjective_parametrs(step);
         this.capital = k / n;
         this.graph_profits = [this.profit];
     }
 
-    creating_subjective_parametrs() {
+    creating_subjective_parametrs(step) {
+        if (this.training_flag) {
+            let risk = this.preset.players[step];
+            if (risk > 0.5) {
+                this.weights.set("return", this.preset.weights[0][0]);
+                this.weights.set("liquidity", this.preset.weights[0][1]);
+                this.weights.set("volatility", this.preset.weights[0][2]);
+            } else {
+                this.weights.set("return", this.preset.weights[1][0]);
+                this.weights.set("liquidity", this.preset.weights[1][1]);
+                this.weights.set("volatility", this.preset.weights[1][2]);
+            }
+            return risk;
+        }
         let risk = Math.random() * 0.8 + 0.1; // Риск профиль инвестора
         if (risk > 0.5) {
             this.weights.set("return", Math.random() * (1 - risk) + risk);
@@ -133,10 +160,12 @@ class Player {
 }
 
 export class Model {
-    constructor(days, n, k, buy, r, news, vol, ret) {
+    constructor(days, n, k, buy, r, news, vol, ret, preset) {
+        this.preset = preset
+        console.log(this.preset)
         this.deal_counter = [];
         this.steps = days;
-        this.company = new Company(k, buy, r, news, ret, vol);
+        this.company = new Company(k, buy, r, news, ret, vol, preset);
         this.players_number = n;
         this.players = this.create_players()
         this.factors = [[0.1, 0.9], [-2 * k * buy / n, 2 * k * this.company.sell_price / n], [0.1, 0.9]]
@@ -145,7 +174,7 @@ export class Model {
     create_players() {
         var players = new Array(this.players_number);
         for (let i = 0; i != this.players_number; i++) {
-            players[i] = new Player(this.company.stock_number, this.players_number, this.company.buy_price);
+            players[i] = new Player(this.company.stock_number, this.players_number, this.company.buy_price, this.preset, i);
         }
         return players;
     }
@@ -188,11 +217,12 @@ export class Model {
         if (deque_buy.length > deque_sell.length) {
             this.company.graph_prices.push(this.company.buy_price * (1 + final_recomend.get(deque_buy[0]) * deque_buy.length / this.players_number));
         } else if (deque_buy.length < deque_sell.length) {
-            this.company.graph_prices.push(this.company.sell_price * (1 - final_recomend.get(deque_sell[deque_sell.length - 1]) / 5));
+            this.company.graph_prices.push(this.company.sell_price * (1 - final_recomend.get(deque_sell[deque_sell.length - 1]) * deque_sell.length / this.players_number));
         } else {
             this.company.graph_prices.push(this.company.graph_prices[this.company.graph_prices.length - 1]);
         }
-        if (this.company.capital_cost - 1 > this.company.sell_price * (1 - final_recomend.get(deque_sell[deque_sell.length - 1]) / 5)) {
+        if (this.company.capital_cost - 1 > this.company.graph_prices[this.company.graph_prices.length - 1] * (1 - final_recomend.get(deque_sell[deque_sell.length - 1]) * 
+        deque_sell.length / this.players_number)) {
             this.company.graph_prices[this.company.graph_prices.length - 1] = this.company.capital_cost - 1;
         }
         this.deal_counter.push(deal_counter);
@@ -208,7 +238,7 @@ export class Model {
     run() {
         for (let i = 0; i != this.steps; i++) {
             console.log(i);
-            console.log(this.company.liquidity[this.company.liquidity.length - 1], this.company.ret[this.company.ret.length - 1], this.company.vol, this.company.news_background / 1.53)
+            console.log(this.company.liquidity[this.company.liquidity.length - 1], this.company.ret[this.company.ret.length - 1], this.company.vol, this.company.news_background);
             let final_recomend = this.scoring();
             console.log(final_recomend);
             let changing = this.change_price(final_recomend, i);

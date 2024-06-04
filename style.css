@@ -272,3 +272,12 @@ body {
     margin-bottom: 30px;
     line-height: 45px;
 }
+
+.instruction_button {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    gap: 30px; 
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+}
