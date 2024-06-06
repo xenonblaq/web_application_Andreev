@@ -4,7 +4,7 @@ const preset = {
     bad: {
         players: [0.1, 0.6, 0.2, 0.4, 0.8, 0.3, 0.15, 0.9, 0.25, 0.7],
         weights: [[0.7, 0.2, 0.1], [0.1, 0.2, 0.7]],
-        news: [0.1, 0.3, 0.25, 0.2, 0.15, 0.2, 0.3, 0.8, 0.7, 0.9, 0.65, 0.3, 0.2, 0.1,
+        news: [0.1, 0.3, 0.25, 0.15, 0.3, 0.2, 0.3, 0.8, 0.7, 0.9, 0.65, 0.3, 0.2, 0.1,
              0.05, 0.3, 0.8, 0.9, 0.95, 0.9, 0.2, 0.1, 0.2, 0.1, 0.01],
         days: 25,
         n: 10,
@@ -17,8 +17,9 @@ const preset = {
     good: {
         players: [0.1, 0.6, 0.2, 0.4, 0.8, 0.3, 0.15, 0.9, 0.25, 0.7],
         weights: [[0.7, 0.2, 0.1], [0.1, 0.2, 0.7]],
-        news: [0.95, 0.65, 0.7, 0.8, 0.2, 0.3, 0.25, 0.1, 0.7, 0.8],
-        days: 20,
+        news: [0.95, 0.65, 0.7, 0.8, 0.7, 0.8, 0.67, 0.78, 0.94, 0.73, 0.2, 0.1, 0.3, 0.25,
+            0.2, 0.3, 0.25, 0.14, 0.17, 0.34, 0.6, 0.76, 0.82, 0.9, 0.98],
+        days: 25,
         n: 10,
         k: 100,
         buy: 300,
@@ -28,6 +29,36 @@ const preset = {
     }
 }
 
+const preset_game = [
+    {
+        chart: null,
+        X: [],
+        Y: [],
+        label: ['Цена акции', 'Рубли', 'Дни'],
+        index: 1
+    },
+    {
+        chart: null,
+        X: [],
+        Y: [],
+        label: ['Новостной фон', 'Влияние', 'Дни'],
+        index: 1
+    },
+    {
+        chart: null,
+        X: [],
+        Y: [],
+        label: ['Доходность', 'Доходность акции', 'Дни'],
+        index: 1
+    },
+    {
+        chart: null,
+        X: [],
+        Y: [],
+        label: ['Волатильность', 'Недельное отклонение', 'Дни'],
+        index: 1
+    },
+]
 
 const games = [
     {
@@ -107,7 +138,7 @@ const games = [
             {
                 canvas: 'vol_chart',
                 text: 'vol_text',
-                label: ['Волатильность', 'Недельная волотильность', 'Дни'],
+                label: ['Волатильность', 'Недельное отклонение', 'Дни'],
                 X: [],
                 Y: [],
                 index: 0,
@@ -125,12 +156,61 @@ class Browser_game {
         this.simulation = new Model(days, n, k, buy, r, news, vol, ret, preset);
         this.days = [...Array(days).keys()].map(x => x + 1);
         this.games = games;
+        this.preset_game = preset_game;
         this.data();
+        if (Object.keys(preset).length != 0) {
+            this.preset_game_data();
+            document.getElementById('next').addEventListener('click', () => {
+                this.preset_game_build();});
+        } 
         this.games.forEach(chart => {
             document.getElementById(chart.start).addEventListener('click', () => this.graph_start(chart));
             document.getElementById(chart.pause).addEventListener('click', () => this.pause(chart));
             document.getElementById(chart.result).addEventListener('click', () => this.result(chart));
         });
+    }
+
+    reset_preset() {
+        this.preset_game.forEach(game =>{
+            if (game.chart) {
+                game.chart.destroy();
+                game.chart = null;
+            }
+            game.X = [];
+            game.Y = [];
+            game.index = 1;
+        });
+    }
+
+    preset_game_data() {
+        this.reset_preset();
+        this.preset_game.forEach(game =>{
+            game.X = this.days;
+        });
+        this.preset_game[0].Y = this.simulation.company.graph_prices;
+        this.preset_game[1].Y = this.simulation.company.news;
+        this.preset_game[2].Y = this.simulation.company.ret;
+        this.preset_game[3].Y = this.simulation.company.vol;
+
+        const price_canvas = document.getElementById('price_chart_ins');
+        const news_canvas = document.getElementById('news_chart_ins');
+        const return_canvas = document.getElementById('return_chart_ins');
+        const vol_canvas = document.getElementById('vol_chart_ins');
+
+        this.preset_game[0].chart = this.scatter_chart(price_canvas, this.preset_game[0].label, this.days, this.preset_game[0].Y);
+        this.preset_game[1].chart = this.scatter_chart(news_canvas, this.preset_game[1].label, this.days, this.preset_game[1].Y);
+        this.preset_game[2].chart = this.scatter_chart(return_canvas, this.preset_game[2].label, this.days, this.preset_game[2].Y);
+        this.preset_game[3].chart = this.scatter_chart(vol_canvas, this.preset_game[3].label, this.days, this.preset_game[3].Y);
+    }
+
+    preset_game_build() {
+        if (this.preset_game[0].index < this.days.length) {
+            this.preset_game.forEach(game => {
+                game.chart.data.datasets[0].data.push({ x: this.days[game.index], y: game.Y[game.index] });
+                game.chart.update();
+                game.index += 1;
+            });
+        } 
     }
 
     data() {
@@ -294,8 +374,22 @@ document.addEventListener('DOMContentLoaded', () => {
         let news = parseFloat(document.getElementById('news').value);
         let vol = parseFloat(document.getElementById('volatility').value);
         let ret = parseFloat(document.getElementById('return').value);
-        // game = new Browser_game(days, n, k, buy, r, news, vol, ret, {});
+        game = new Browser_game(days, n, k, buy, r, news, vol, ret, {});
+    });
+
+    document.getElementById('start_training_bad').addEventListener('click', () => {
+        if (game) {
+            game.reset_preset();  // Очистка предыдущих графиков, если они есть
+        }
         game = new Browser_game(preset.bad.days, preset.bad.n, preset.bad.k, preset.bad.buy, 
             preset.bad.r, preset.bad.news[0], preset.bad.vol, preset.bad.ret, preset.bad);
+    });
+
+    document.getElementById('start_training_good').addEventListener('click', () => {
+        if (game) {
+            game.reset_preset();  // Очистка предыдущих графиков, если они есть
+        }
+        game = new Browser_game(preset.good.days, preset.good.n, preset.good.k, preset.good.buy, 
+            preset.good.r, preset.good.news[0], preset.good.vol, preset.good.ret, preset.good);
     });
 });

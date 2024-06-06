@@ -152,7 +152,7 @@ class Player {
         if (buy > 3 * capital_cost / 0.1) {
             score = score * 0.5;
         } else if (buy < capital_cost) {
-            score = score * 1.5;
+            score = score * 2;
         }
         return score;
     }
@@ -167,7 +167,7 @@ export class Model {
         this.steps = days;
         this.company = new Company(k, buy, r, news, ret, vol, preset);
         this.players_number = n;
-        this.players = this.create_players()
+        this.players = this.create_players();
         this.factors = [[0.1, 0.9], [-2 * k * buy / n, 2 * k * this.company.sell_price / n], [0.1, 0.9]]
     }
 

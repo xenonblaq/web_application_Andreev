@@ -229,7 +229,7 @@ body {
 
   canvas { 
     display: block;
-	/* background-color: #B1C2FF; */
+	background-color: #B1C2FF;
     border-radius: 15px;
   }
 
@@ -280,4 +280,20 @@ body {
     justify-content: center;
     align-items: center;
     padding: 30px;
+}
+
+.instruction_canvas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    width: fit-content;
+}
+
+.chart_ins {
+    margin: 10px;
+    width: 500px; /* Фиксированная ширина для каждого канваса */
+    /* width: calc(30% - 20px); Два канваса на строку с учетом отступов */
+    box-sizing: border-box;
 }
