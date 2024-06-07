@@ -297,3 +297,15 @@ body {
     /* width: calc(30% - 20px); Два канваса на строку с учетом отступов */
     box-sizing: border-box;
 }
+
+#inst_text {
+    position: relative;
+    color: white;
+    width: 500px;
+    height: 150px;
+    display: flex;
+    left: 32%;
+    align-items: center;
+    justify-content: center;
+    line-height: 20px;
+}

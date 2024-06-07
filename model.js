@@ -150,7 +150,7 @@ class Player {
         let score = 0.25 * this.risk + 0.15 * (this.weights.get("return") * ret + this.weights.get("volatility") * vol
         + this.weights.get("liquidity") * (liq[liq.length - 1])) + 0.6 * news; // нужно нормализовать волатильность и доходность
         if (buy > 3 * capital_cost / 0.1) {
-            score = score * 0.5;
+            score = score * 0.65;
         } else if (buy < capital_cost) {
             score = score * 2;
         }

@@ -106,17 +106,17 @@ const games = [
                 chart: null,
                 pause: false
             },
-            {
-                canvas: 'deal_chart',
-                text: 'deal_text',
-                label: ['Количество акций в обороте', 'Количество акций', 'Дни'],
-                X: [],
-                Y: [],
-                index: 0,
-                interval: null,
-                chart: null,
-                pause: false
-            }
+            // {
+            //     canvas: 'deal_chart',
+            //     text: 'deal_text',
+            //     label: ['Количество акций в обороте', 'Количество акций', 'Дни'],
+            //     X: [],
+            //     Y: [],
+            //     index: 0,
+            //     interval: null,
+            //     chart: null,
+            //     pause: false
+            // }
         ]
     },
     {
@@ -201,16 +201,33 @@ class Browser_game {
         this.preset_game[1].chart = this.scatter_chart(news_canvas, this.preset_game[1].label, this.days, this.preset_game[1].Y);
         this.preset_game[2].chart = this.scatter_chart(return_canvas, this.preset_game[2].label, this.days, this.preset_game[2].Y);
         this.preset_game[3].chart = this.scatter_chart(vol_canvas, this.preset_game[3].label, this.days, this.preset_game[3].Y);
+
+        let text = document.getElementById('inst_text');
+        text.innerHTML = 'Модель готова к работе. Нажмите кнопку "далее".' + '<br>';
+        text.innerHTML += "Текщая цена акции: " + String(this.preset_game[0].Y[this.preset_game[0].index - 1].toFixed(2)) + '<br>';
+        text.innerHTML += "Новость сегодняшнего дня : " + String(this.preset_game[1].Y[this.preset_game[1].index - 1]) + '<br>';
+        text.innerHTML += "Текщая доходность: " + String(this.preset_game[2].Y[this.preset_game[2].index - 1].toFixed(2)) + '<br>';
+        text.innerHTML += "Текщая волотильность :" + String(this.preset_game[3].Y[this.preset_game[3].index - 1].toFixed(2)) + '<br>';
     }
 
     preset_game_build() {
+        let text = document.getElementById('inst_text');
+        text.innerHTML = '';
         if (this.preset_game[0].index < this.days.length) {
             this.preset_game.forEach(game => {
                 game.chart.data.datasets[0].data.push({ x: this.days[game.index], y: game.Y[game.index] });
                 game.chart.update();
+                console.log(game.index);
                 game.index += 1;
             });
-        } 
+            text.innerHTML += "Текщая цена акции: " + String(this.preset_game[0].Y[this.preset_game[0].index - 1].toFixed(2)) + '<br>';
+            text.innerHTML += "Новость сегодняшнего дня : " + String(this.preset_game[1].Y[this.preset_game[1].index - 1]) + '<br>';
+            text.innerHTML += "Текщая доходность: " + String(this.preset_game[2].Y[this.preset_game[2].index - 1].toFixed(2)) + '<br>';
+            text.innerHTML += "Текщая волотильность :" + String(this.preset_game[3].Y[this.preset_game[3].index - 1].toFixed(2)) + '<br>';
+
+        } else {
+            text.innerHTML = 'Обучаяющая симуляция завершена. Перезагрузите страницу для начала новой или снова используйте кнопки "начать" для ускорения темпа.';
+        }
     }
 
     data() {
@@ -223,7 +240,7 @@ class Browser_game {
         this.games[0].charts[0].Y = this.simulation.company.graph_prices;
         this.games[0].charts[1].Y = this.simulation.company.news;
         this.games[1].charts[0].Y = this.simulation.company.liquidity;
-        this.games[1].charts[1].Y = this.simulation.deal_counter;
+        // this.games[1].charts[1].Y = this.simulation.deal_counter;
         this.games[2].charts[0].Y = this.simulation.company.ret;
         this.games[2].charts[1].Y = this.simulation.company.vol;
     }
@@ -279,15 +296,15 @@ class Browser_game {
                         settings.chart.data.datasets[0].data = settings.X.slice(0, settings.index + 1).map((x, index) => ({ x, y: settings.Y[index] }));
                         settings.chart.update();
                         if (settings.index > 0) {
-                            if (settings.Y[settings.index] - settings.Y[settings.index - 1] < -0.4 && settings.Y[settings.index] - settings.Y[settings.index - 1] != 0 && settings.canvas != 'price_chart') {
+                            if (settings.Y[settings.index] - settings.Y[settings.index - 1] < -0.4 && settings.Y[settings.index] != settings.Y[settings.index - 1] && settings.canvas != 'price_chart' ) {
                                 let value = String((settings.Y[settings.index] - settings.Y[settings.index - 1]).toFixed(2)) + ' ';
                                 let string = `<span style="color: red;">${value}</span> `;
                                 text.innerHTML += string;
-                            } else if (settings.Y[settings.index] - settings.Y[settings.index - 1] > 0.4 && settings.canvas != 'price_chart') {
+                            } else if (settings.Y[settings.index] - settings.Y[settings.index - 1] > 0.4 && settings.Y[settings.index] != settings.Y[settings.index - 1] && settings.canvas != 'price_chart') {
                                 let value = String((settings.Y[settings.index] - settings.Y[settings.index - 1]).toFixed(2)) + ' ';
                                 let string = `<span style="color: green;">${value}</span> `;
                                 text.innerHTML += string;
-                            } else {
+                            } else if (settings.Y[settings.index] != settings.Y[settings.index - 1]) {
                                 let value = String((settings.Y[settings.index] - settings.Y[settings.index - 1]).toFixed(2)) + ' ';
                                 text.innerHTML += value;
                             }
@@ -335,10 +352,6 @@ class Browser_game {
             chart.pause = false;
         });
     }
-
-    training_game() {
-        this.simulation = new Model(days, n, k, buy, r, news, vol, ret);
-    }  
 }
 
 var game;
@@ -379,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('start_training_bad').addEventListener('click', () => {
         if (game) {
-            game.reset_preset();  // Очистка предыдущих графиков, если они есть
+            game.reset_preset()
         }
         game = new Browser_game(preset.bad.days, preset.bad.n, preset.bad.k, preset.bad.buy, 
             preset.bad.r, preset.bad.news[0], preset.bad.vol, preset.bad.ret, preset.bad);
@@ -387,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('start_training_good').addEventListener('click', () => {
         if (game) {
-            game.reset_preset();  // Очистка предыдущих графиков, если они есть
+            game.reset_preset();
         }
         game = new Browser_game(preset.good.days, preset.good.n, preset.good.k, preset.good.buy, 
             preset.good.r, preset.good.news[0], preset.good.vol, preset.good.ret, preset.good);
