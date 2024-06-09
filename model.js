@@ -1,5 +1,5 @@
 class Company {
-    constructor(k, buy, r, news, ret, vol, preset) {
+    constructor(k, buy, r, news, ret, vol,  news_p, news_speed, preset) {
         this.preset = preset
         this.training_flag = false;
         if (Object.keys(this.preset).length != 0) {
@@ -16,6 +16,8 @@ class Company {
         this.vol = [vol];
         this.news_background = news;
         this.news = [news];
+        this.news_p = news_p;
+        this.news_speed = news_speed
     }
 
 
@@ -36,13 +38,13 @@ class Company {
         } else {
             let P = Math.random();
             if (this.news_background > 0.6) {
-                if (P > 0.1) {
+                if (P > this.news_p) {
                     news = Math.random() * (1 - 0.4) + 0.4;
                 } else {
                     news = Math.random() * (0.6 - 0.1) + 0.1;
                 }
             } else {
-                if (P > 0.1) {
+                if (P > this.news_p) {
                     news = Math.random() * (0.4 - 0.1) + 0.1;
                 } else {
                     news = Math.random() * (1 - 0.5) + 0.5;
@@ -52,9 +54,9 @@ class Company {
         this.news.push(news.toFixed(2));
         this.news_background = 0
         for (let i = 0; i < this.news.length; i++) {
-            this.news_background += this.news[i] * Math.exp(0.9 * (i - this.news.length + 1));
+            this.news_background += this.news[i] * Math.exp(this.news_speed * (i - this.news.length + 1));
         }
-        this.news_background = this.news_background / 1.53;
+        this.news_background = this.news_background / 1.53; //изменить сумму ряда в связи со скоростью
     }
 
     change_parametrs(deal_counter, step) {
@@ -81,6 +83,7 @@ class Player {
     constructor(k, n, buy, preset, step) {
         this.preset = preset;
         this.training_flag = false;
+        console.log(preset)
         if (Object.keys(this.preset).length != 0) {
             this.training_flag = true;
         }
@@ -160,12 +163,12 @@ class Player {
 }
 
 export class Model {
-    constructor(days, n, k, buy, r, news, vol, ret, preset) {
+    constructor(days, n, k, buy, r, news, vol, ret, news_p, news_speed, preset) {
         this.preset = preset
         console.log(this.preset)
         this.deal_counter = [];
         this.steps = days;
-        this.company = new Company(k, buy, r, news, ret, vol, preset);
+        this.company = new Company(k, buy, r, news, ret, vol, news_p, news_speed, preset);
         this.players_number = n;
         this.players = this.create_players();
         this.factors = [[0.1, 0.9], [-2 * k * buy / n, 2 * k * this.company.sell_price / n], [0.1, 0.9]]

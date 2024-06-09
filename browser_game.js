@@ -152,8 +152,8 @@ const games = [
 
 class Browser_game {
     
-    constructor(days, n, k, buy, r, news, vol, ret, preset) {
-        this.simulation = new Model(days, n, k, buy, r, news, vol, ret, preset);
+    constructor(days, n, k, buy, r, news, vol, ret, news_p, news_speed, preset) {
+        this.simulation = new Model(days, n, k, buy, r, news, vol, ret, news_p, news_speed, preset);
         this.days = [...Array(days).keys()].map(x => x + 1);
         this.games = games;
         this.preset_game = preset_game;
@@ -387,7 +387,40 @@ document.addEventListener('DOMContentLoaded', () => {
         let news = parseFloat(document.getElementById('news').value);
         let vol = parseFloat(document.getElementById('volatility').value);
         let ret = parseFloat(document.getElementById('return').value);
-        game = new Browser_game(days, n, k, buy, r, news, vol, ret, {});
+        let news_p = parseFloat(document.getElementById('news_p').value);
+        let news_speed = parseFloat(document.getElementById('news_speed').value);
+        if (days > 100) {
+            alert("Недопустимые параметры: максимальная длина симуляции - 100 дней");
+            return;
+        } if (n > 50) {
+            alert("Недопустимые параметры: максимальное количество игркоов - 50 дней");
+            return;
+        } if (k <= 0) {
+            alert("Недопустимые параметры: количество акций - положительное число");
+            return;
+        } if (r > 1 || r < 0) {
+            alert("Недопустимые параметры: ликвидность - число от нуля до единицы");
+            return;
+        } if (news > 1 || news < 0) {
+            alert("Недопустимые параметры: новостной фон - число от нуля до единицы");
+            return;
+        } if (ret > 1 || ret < 0) {
+            alert("Недопустимые параметры: доходность - число от нуля до единицы");
+            return;
+        } if (news_p > 1 || news_p < 0) {
+            alert("Недопустимые параметры: вероятность скачка - число от нуля до единицы");
+            return;
+        } if (news_speed > 1 || news_speed < 0) {
+            alert("Недопустимые параметры: скорость забывания - число от нуля до единицы");
+            return;
+        } if (vol > 1 || vol < 0) {
+            alert("Недопустимые параметры: волотильность - число от нуля до единицы");
+            return;
+        }
+        let text = document.getElementById('starting_text');
+        game = new Browser_game(days, n, k, buy, r, news, vol, ret, news_p, news_speed, {});
+        text.innerHTML = "Модель успешно запущена!";
+
     });
 
     document.getElementById('start_training_bad').addEventListener('click', () => {
@@ -395,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
             game.reset_preset()
         }
         game = new Browser_game(preset.bad.days, preset.bad.n, preset.bad.k, preset.bad.buy, 
-            preset.bad.r, preset.bad.news[0], preset.bad.vol, preset.bad.ret, preset.bad);
+            preset.bad.r, preset.bad.news[0], preset.bad.vol, preset.bad.ret, 0.1, 0.9, preset.bad);
     });
 
     document.getElementById('start_training_good').addEventListener('click', () => {
@@ -403,6 +436,6 @@ document.addEventListener('DOMContentLoaded', () => {
             game.reset_preset();
         }
         game = new Browser_game(preset.good.days, preset.good.n, preset.good.k, preset.good.buy, 
-            preset.good.r, preset.good.news[0], preset.good.vol, preset.good.ret, preset.good);
+            preset.good.r, preset.good.news[0], preset.good.vol, preset.good.ret, 0.1, 0.9, preset.good);
     });
 });
