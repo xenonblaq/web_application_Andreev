@@ -276,7 +276,7 @@ body {
 .instruction_button {
     display: grid;
     grid-template-columns: auto auto auto auto;
-    gap: 30px; 
+    gap: 10px; 
     justify-content: center;
     align-items: center;
     padding: 30px;
@@ -299,6 +299,18 @@ body {
 }
 
 #inst_text {
+    position: relative;
+    color: white;
+    width: 500px;
+    height: 150px;
+    display: flex;
+    left: 32%;
+    align-items: center;
+    justify-content: center;
+    line-height: 20px;
+}
+
+#inst_text_1 {
     position: relative;
     color: white;
     width: 500px;

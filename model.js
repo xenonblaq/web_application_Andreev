@@ -45,7 +45,6 @@ class Company {
             news = this.preset.news[step];
         } else {
             let P = Math.random();
-            console.log(P, this.news_background, this.news_p)
             if (this.news_background > 0.5) {
                 if (P > this.news_p) {
                     news = Math.random() * (1 - 0.4) + 0.4;
@@ -66,7 +65,6 @@ class Company {
             this.news_background += this.news[i] * Math.exp(this.news_speed[0] * (i - this.news.length + 1));
         }
         this.news_background = this.news_background / this.news_speed[1]; //изменить сумму ряда в связи со скоростью
-        console.log(this.news_background, "fsdfsdf")
     }
 
     change_parametrs(deal_counter, step) {
