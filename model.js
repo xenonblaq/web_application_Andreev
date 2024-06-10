@@ -1,5 +1,5 @@
 class Company {
-    constructor(k, buy, r, news, ret, vol,  news_p, news_speed, preset) {
+    constructor(k, buy, r, news, ret, vol,  news_p, news_speed, preset, days) {
         this.preset = preset
         this.training_flag = false;
         if (Object.keys(this.preset).length != 0) {
@@ -17,9 +17,17 @@ class Company {
         this.news_background = news;
         this.news = [news];
         this.news_p = news_p;
-        this.news_speed = news_speed
+        this.news_speed = this.serias_sum(news_speed, days);
     }
 
+    serias_sum(news_speed, days) {
+        let sum = 0
+        for (let i = 0; i < days; i++) {
+            sum += Math.exp(news_speed * (i - days + 1));
+        }
+        console.log(sum, "fsdfsdofksdkfsodfkso");
+        return [news_speed, sum];
+    }
 
     volatility() {
         var variations = new Array(7);
@@ -37,7 +45,8 @@ class Company {
             news = this.preset.news[step];
         } else {
             let P = Math.random();
-            if (this.news_background > 0.6) {
+            console.log(P, this.news_background, this.news_p)
+            if (this.news_background > 0.5) {
                 if (P > this.news_p) {
                     news = Math.random() * (1 - 0.4) + 0.4;
                 } else {
@@ -54,19 +63,16 @@ class Company {
         this.news.push(news.toFixed(2));
         this.news_background = 0
         for (let i = 0; i < this.news.length; i++) {
-            this.news_background += this.news[i] * Math.exp(this.news_speed * (i - this.news.length + 1));
+            this.news_background += this.news[i] * Math.exp(this.news_speed[0] * (i - this.news.length + 1));
         }
-        this.news_background = this.news_background / 1.53; //изменить сумму ряда в связи со скоростью
+        this.news_background = this.news_background / this.news_speed[1]; //изменить сумму ряда в связи со скоростью
+        console.log(this.news_background, "fsdfsdf")
     }
 
     change_parametrs(deal_counter, step) {
         let r = deal_counter / this.stock_number;
         this.liquidity.push(r);
-        if (r > this.liquidity[this.liquidity.length - 2]) {
-            this.spread -= Math.pow(0.5, 50 * r);
-        } else {
-            this.spread += Math.pow(0.5, 50 * r);
-        }
+        this.spread = Math.pow(0.5, 50 * r);
         this.buy_price = this.graph_prices[this.graph_prices.length - 1];
         this.sell_price = this.buy_price - this.spread;
         this.ret.push(Math.log(this.graph_prices[this.graph_prices.length - 1] / this.graph_prices[this.graph_prices.length - 2]));
@@ -168,7 +174,7 @@ export class Model {
         console.log(this.preset)
         this.deal_counter = [];
         this.steps = days;
-        this.company = new Company(k, buy, r, news, ret, vol, news_p, news_speed, preset);
+        this.company = new Company(k, buy, r, news, ret, vol, news_p, news_speed, preset, days);
         this.players_number = n;
         this.players = this.create_players();
         this.factors = [[0.1, 0.9], [-2 * k * buy / n, 2 * k * this.company.sell_price / n], [0.1, 0.9]]
@@ -206,11 +212,6 @@ export class Model {
         let idx_buy = deque_buy.length - 1;
         let deal_counter = 0;
         while (idx_buy >= 0 && idx_sell != deque_sell.length) {
-            // if (deque_buy.length > deque_sell.length) {
-            //     let price = this.company.buy_price * (2 - final_recomend.get(deque_buy[idx_buy]));
-            // } else {
-            //     let price = this.company.sell_price * (1 - final_recomend.get(deque_sell[idx_sell]));
-            // }
             deal_counter += this.players[deque_sell[idx_sell]].capital;
             this.players[deque_buy[idx_buy]].capital += this.players[deque_sell[idx_sell]].capital;
             this.players[deque_sell[idx_sell]].capital = 0;

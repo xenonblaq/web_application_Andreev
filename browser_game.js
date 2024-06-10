@@ -419,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         let text = document.getElementById('starting_text');
         game = new Browser_game(days, n, k, buy, r, news, vol, ret, news_p, news_speed, {});
-        text.innerHTML = "Модель успешно запущена!";
+        text.innerHTML = "модель успешно запущена!";
 
     });
 
