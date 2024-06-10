@@ -234,8 +234,11 @@ body {
   }
 
 .toggle {
+    display: block;
+    width: 100%;
+    text-align: center;
     background: none;
-    color: white;
+    color: #B1C2FF;
     padding: 10px 20px; 
     border-radius: 15px; 
     border: none;
@@ -293,8 +296,7 @@ body {
 
 .chart_ins {
     margin: 10px;
-    width: 500px; /* Фиксированная ширина для каждого канваса */
-    /* width: calc(30% - 20px); Два канваса на строку с учетом отступов */
+    width: 500px;
     box-sizing: border-box;
 }
 
