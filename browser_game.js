@@ -1,4 +1,11 @@
+// Импорт класса Model для инициализации модели
 import {Model} from './model.js';
+
+// Постоянная глобальная структура preset для запуска обучающей модели.
+// Обучающая модель содержит в себе по сути три режима: базовый, начиная со спада,
+// базовый, начиная с роста, и режим скорости забывания (низкая и высокая). 
+//  Preset хранит в себе параметры для запуска Model и соответствующие режиму
+// кнопки, поля для текста и канвасы для графиков.
 
 const preset = {
     bad: {
@@ -51,6 +58,10 @@ const preset = {
     }
 }
 
+// Постоянная глобальная структура preset_game для запуска обучающей модели.
+// Хранит информацию для построения графиков: график (объект класса Chart),
+// массивы осей абсциссы и ординаты, названия осей и графиков, текущий шаг построения.
+
 const preset_game = [
     {
         chart: null,
@@ -81,6 +92,12 @@ const preset_game = [
         index: 1
     },
 ]
+
+// Постоянная глобальная структура games для запуска пользовательской модели.
+// Хранит информацию для построения графиков: кнопки начала, паузы и результата, график (объект класса Chart),
+// массивы осей абсциссы и ординаты, названия осей и графиков, текущий шаг построения,
+// интервал для построения с задержкой, булевую переменную пауза. 
+// Кнопки начала, паузы и результата могут относится к двум графикам одновременно.
 
 const games = [
     {
@@ -161,59 +178,72 @@ const games = [
     }
 ];
 
+// Класс Browser_game для запуска модели и построения графиков.
+
 class Browser_game {
     
     constructor(days, n, k, buy, r, news, vol, ret, news_p, news_speed, preset) {
+        //Инициализация класса Model с введенными параметрами и объектом preset, пустым или нет в зависимости от режима.
         this.simulation = new Model(days, n, k, buy, r, news, vol, ret, news_p, news_speed, preset);
-        this.days = [...Array(days).keys()].map(x => x + 1);
-        this.games = games;
-        this.preset_game = preset_game;
-        this.data();
-        console.log(preset)
-        if (Object.keys(preset).length != 0) {
-            this.preset_game_data(preset);
+        this.days = [...Array(days).keys()].map(x => x + 1); // Массив дней для оси абсцисс
+        this.simulation.run(); // Запуск модели
+        if (Object.keys(preset).length != 0) { // Обучающая
+            this.preset_game = preset_game;
+            this.preset_game_data(preset); // Функция заполнения данных для построения графика 
             document.getElementById(preset.button).addEventListener('click', () => {
-                this.preset_game_build(preset);});
-        } 
-        this.games.forEach(chart => {
-            document.getElementById(chart.start).addEventListener('click', () => this.graph_start(chart));
-            document.getElementById(chart.pause).addEventListener('click', () => this.pause(chart));
-            document.getElementById(chart.result).addEventListener('click', () => this.result(chart));
-        });
+                this.preset_game_build(preset);}); // По нажатии кнопки "далее" обновление графиков
+        } else { // Пользовательская
+            this.games = games;
+            this.data(); // Функция заполнения данных для построения графика 
+            this.games.forEach(chart => {
+                document.getElementById(chart.start).addEventListener('click', () => this.graph_start(chart)); // Начало построения
+                document.getElementById(chart.pause).addEventListener('click', () => this.pause(chart)); // Приостановка построения графиков
+                document.getElementById(chart.result).addEventListener('click', () => this.result(chart)); // Построение графиков без задержки
+            });
+        }
     }
 
+    // Функция уничтожения графиков и обнуления всей информации обучающего режима
+    // для устранения конфликтов с последующими инициализациями Browser_game
     reset_preset() {
+        // Уничтожение объектов Chart
         this.preset_game.forEach(game =>{
             if (game.chart) {
                 game.chart.destroy();
                 game.chart = null;
             }
+            // Обнуление массивов и индекса построения
             game.X = [];
             game.Y = [];
             game.index = 1;
         });
     }
 
+    // Заполнение данных для построения графиков обучающей модели
     preset_game_data(preset) {
-        this.reset_preset();
+        this.reset_preset(); // Если графики существуют, их следует убрать
         this.preset_game.forEach(game =>{
-            game.X = this.days;
+            game.X = this.days; // Для каждого графика ось абсцисс - дни
         });
+        // Заполнение осей ординат каждого графика соответствующим массивом
         this.preset_game[0].Y = this.simulation.company.graph_prices;
         this.preset_game[1].Y = this.simulation.company.news;
         this.preset_game[2].Y = this.simulation.company.ret;
         this.preset_game[3].Y = this.simulation.company.vol;
 
+        // Поиск canvas для построения каждого графика
         const price_canvas = document.getElementById(preset.canvas[0]);
         const news_canvas = document.getElementById((preset.canvas[1]));
         const return_canvas = document.getElementById((preset.canvas[2]));
         const vol_canvas = document.getElementById((preset.canvas[3]));
 
+        // Создание графиков - объектов Chart. Атрибуты: canvas, названия графика и осей, ось абсцисс, ось ординат
         this.preset_game[0].chart = this.scatter_chart(price_canvas, this.preset_game[0].label, this.days, this.preset_game[0].Y);
         this.preset_game[1].chart = this.scatter_chart(news_canvas, this.preset_game[1].label, this.days, this.preset_game[1].Y);
         this.preset_game[2].chart = this.scatter_chart(return_canvas, this.preset_game[2].label, this.days, this.preset_game[2].Y);
         this.preset_game[3].chart = this.scatter_chart(vol_canvas, this.preset_game[3].label, this.days, this.preset_game[3].Y);
 
+        // У обоих режимов обучающей модели есть свои поля для текста. Поиск и начальное заполнение данных полей
         let text = document.getElementById(preset.text);
         text.innerHTML = 'Модель готова к работе. Нажмите кнопку "далее".' + '<br>';
         text.innerHTML += "Текщая цена акции: " + String(this.preset_game[0].Y[this.preset_game[0].index - 1].toFixed(2)) + '<br>';
@@ -222,41 +252,43 @@ class Browser_game {
         text.innerHTML += "Текщая волотильность: " + String(this.preset_game[3].Y[this.preset_game[3].index - 1].toFixed(2)) + '<br>';
     }
 
+    // Функция обновления графиков по нажатии кнопки "далее"
     preset_game_build(preset) {
-        let text = document.getElementById(preset.text);
+        let text = document.getElementById(preset.text); // Поиск поля для текста
         text.innerHTML = '';
-        if (this.preset_game[0].index < this.days.length) {
+        if (this.preset_game[0].index < this.days.length) { // Пока дни симуляции не прошли
             this.preset_game.forEach(game => {
-                game.chart.data.datasets[0].data.push({ x: this.days[game.index], y: game.Y[game.index] });
-                game.chart.update();
-                console.log(game.index);
-                game.index += 1;
+                game.chart.data.datasets[0].data.push({ x: this.days[game.index], y: game.Y[game.index] }); // Добавление точек в в массивы
+                game.chart.update(); // Обновление графика
+                game.index += 1; // Увеличение индекса
             });
+            // Заполнение поля для текста текущими данными
             text.innerHTML += "Текщая цена акции: " + String(this.preset_game[0].Y[this.preset_game[0].index - 1].toFixed(2)) + '<br>';
             text.innerHTML += "Новость сегодняшнего дня : " + String(this.preset_game[1].Y[this.preset_game[1].index - 1]) + '<br>';
             text.innerHTML += "Текщая доходность: " + String(this.preset_game[2].Y[this.preset_game[2].index - 1].toFixed(2)) + '<br>';
             text.innerHTML += "Текщая волотильность :" + String(this.preset_game[3].Y[this.preset_game[3].index - 1].toFixed(2)) + '<br>';
-
         } else {
-            text.innerHTML = 'Обучаяющая симуляция завершена. Перезагрузите страницу для начала новой или снова используйте кнопки "начать" для ускорения темпа.';
+            // Все точки были добавлены. Конец
+            text.innerHTML = 'Обучающая симуляция завершена. Перезагрузите страницу для начала новой или снова используйте кнопки "начать" для ускорения темпа.';
         }
     }
 
+    // Заполнение данных для построения графиков обучающей модели
     data() {
         this.games.forEach(game => {
             game.charts.forEach(chart => {
-                chart.X = this.days;
+                chart.X = this.days; // Так же заполнение массива абсцисс днями
             });
         });
-        this.simulation.run();
+        // Заполнение осей ординат каждого графика соответствующим массивом
         this.games[0].charts[0].Y = this.simulation.company.graph_prices;
         this.games[0].charts[1].Y = this.simulation.company.news;
         this.games[1].charts[0].Y = this.simulation.company.liquidity;
-        // this.games[1].charts[1].Y = this.simulation.deal_counter;
         this.games[2].charts[0].Y = this.simulation.company.ret;
         this.games[2].charts[1].Y = this.simulation.company.vol;
     }
 
+    // Функция построения графика. По сути создание объекта класса Chart из импортированной библиотеки Chart.js
     scatter_chart(canvas, label, X, Y) {
         return new Chart(canvas, {
             type: 'scatter',
@@ -292,54 +324,64 @@ class Browser_game {
         });
     }
 
+    // Функция начала построения, обновления данных и графиков
     graph_start(game) {
+        // Стирание прдыдущих данных
         this.reset(game);
-        game.charts.forEach (settings => {
-            const canvas = document.getElementById(settings.canvas);
-            canvas.style.backgroundColor = '#B1C2FF';
-            console.log(canvas);
+        game.charts.forEach (settings => { // Итерирование по каждому графику
+            const canvas = document.getElementById(settings.canvas); // Поиск соответствующего canvas
+            // Поиск соответствующего поля для текста и его первоначальное заполнение
             const text = document.getElementById(settings.text);
-            text.innerText = settings.label[0] + ':\n'; 
+            text.innerText = settings.label[0] + ':\n';
+            // Создание графиков и их последующее обновление
             settings.chart = this.scatter_chart(canvas, settings.label, settings.X, settings.Y);
-            settings.interval = setInterval(() => {
-                if (!settings.pause) {
-                    if (settings.index < this.days.length - 1) {
+            settings.interval = setInterval(() => { // Создание задержки построения
+                if (!settings.pause) { // Если построение не стоит на паузе
+                    if (settings.index < this.days.length - 1) { // Пока не закончились дни
                         settings.index++;
+                        // Добавление новых точек на графики и их обновление
                         settings.chart.data.datasets[0].data = settings.X.slice(0, settings.index + 1).map((x, index) => ({ x, y: settings.Y[index] }));
                         settings.chart.update();
+                        // Добавление текста в отведенное поле
                         if (settings.index > 0) {
-                            if (settings.Y[settings.index] - settings.Y[settings.index - 1] < -0.4 && settings.Y[settings.index] != settings.Y[settings.index - 1] && settings.canvas != 'price_chart' ) {
+                            // В текст добавляется изменение соответствующего параметра за один шаг. Если модуль разницы больше 0.4,
+                            // текст заполняется зеленым или красным цветом в соответствии со стороной перегиба. Текст графика цены не окрашивается
+                            if (settings.Y[settings.index] - settings.Y[settings.index - 1] < -0.4 && settings.canvas != 'price_chart' ) {
                                 let value = String((settings.Y[settings.index] - settings.Y[settings.index - 1]).toFixed(2)) + ' ';
                                 let string = `<span style="color: red;">${value}</span> `;
                                 text.innerHTML += string;
-                            } else if (settings.Y[settings.index] - settings.Y[settings.index - 1] > 0.4 && settings.Y[settings.index] != settings.Y[settings.index - 1] && settings.canvas != 'price_chart') {
+                            } else if (settings.Y[settings.index] - settings.Y[settings.index - 1] > 0.4 && settings.canvas != 'price_chart') {
                                 let value = String((settings.Y[settings.index] - settings.Y[settings.index - 1]).toFixed(2)) + ' ';
                                 let string = `<span style="color: green;">${value}</span> `;
                                 text.innerHTML += string;
+                            // Если изменений не произошло, то они не выводятся. Например, чтобы изменения волатильности выводились каждые семь дней
                             } else if (settings.Y[settings.index] != settings.Y[settings.index - 1]) {
                                 let value = String((settings.Y[settings.index] - settings.Y[settings.index - 1]).toFixed(2)) + ' ';
                                 text.innerHTML += value;
                             }
-                        } else {
+                        } else { // Если изменений еще не произошло (первый день), просто выводим текущий параметр
                             text.innerHTML += settings.Y[settings.index].toFixed(2);
                         }
-                    } else {
+                    } else { // Симуляция закончилась, уничтожаем задержку
                         clearInterval(settings.interval);
                         settings.interval = null;
                     }
                 }
-            }, 500);
+            }, 500); // Задержка - 500ms
         });
     }
 
+    // Функция приостановки построения по нажатии кнопки паузы
     pause(game) {
         game.charts.forEach(chart => {
             chart.pause = !chart.pause;
         });
     }
 
+    // Функция построения графика без задержки
     result(game) {
-        this.reset(game);
+        this.reset(game); // Уничтожаем текущий график
+        // Создаем и строим графики полностью без задержки 
         game.charts.forEach(chart => {
             const canvas = document.getElementById(chart.canvas);
             const text = document.getElementById(chart.text);
@@ -350,38 +392,45 @@ class Browser_game {
         });
     }
 
+    // Уничтожение графиков
     reset(game) {
         game.charts.forEach(chart => {
+            // Обнуление задержки
             if (chart.interval) {
                 clearInterval(chart.interval);
                 chart.interval = null;
             }
-            chart.index = 0;
+            chart.index = 0; // Нулевой шаг
             if (chart.chart) {
-                chart.chart.destroy();
+                chart.chart.destroy(); // уничтожение графиков
                 chart.chart = null;
             }
+            // Если игра стояла на паузе, то убираем ее
             chart.pause = false;
         });
     }
 }
 
-var game;
-
+var game; // Создание переменной для класса Browser_game
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Класс toogle в model.html означает выпадающий список, contents - его содержимое
     const toggles = document.querySelectorAll('.toggle');
     const contents = document.querySelectorAll('.content');
 
+    // Содержимое выпадающего списка не отображается
     contents.forEach(content => {
         content.style.display = 'none';
     });
 
+    // Копирование текста из кнопок в массив text
     let text = [];
     toggles.forEach((button) => {
         text.push(button.textContent.substring(1));
     });
 
+    // Проходимся по всем выпадающим спискам. По клику на на список_index его содержимое отображается,
+    // в тексте кнопки меняется ▼. Повторное нажатие возвращает предыдущий вид
     toggles.forEach((button, index) => {
         button.addEventListener('click', () => {
             const content = contents[index];
@@ -390,6 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Поиск введенных параметров и остановка с выводом уведомления, если они не подходят
     document.getElementById('start_button').addEventListener('click', () => {
         let days = parseInt(document.getElementById('days').value);
         let n = parseInt(document.getElementById('players').value);
@@ -429,12 +479,14 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Недопустимые параметры: волотильность - число от нуля до единицы");
             return;
         }
+        // Инициализация класса Browser_game и вывод сообщения об ее успешности
         let text = document.getElementById('starting_text');
         game = new Browser_game(days, n, k, buy, r, news, vol, ret, news_p, news_speed, {});
         text.innerHTML = "модель успешно запущена!";
 
     });
 
+    // Инициализация режимов обучающей модели
     document.getElementById('start_training_bad').addEventListener('click', () => {
         if (game) {
             game.reset_preset()

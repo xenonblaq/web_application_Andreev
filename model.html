@@ -1,36 +1,30 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Импорт библиотеки Chart.js для построения графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Импорт style.css - стилизация документа -->
     <link rel="stylesheet" href="style.css">
     <title>Симуляция рынка ценных бумаг</title>
 </head>
 <body>
     <div class="container">
-        <div class="first">
+      <!-- Создание первой линии страницы, состоящей из ссылок на главную страницу, инструкцию, контактную информацию, теорию и поддержку -->
+        <div class="first"> 
           <a href="/index.html" class="logo">
             <img src="img/логотип.svg" alt="логотип">
           </a>
           <div class="first_1">
-            <a href="" class="instruction">
-              инструкция
-            </a>
-            <a href="" class="contacts">
-              о нас
-            </a>
-            <a href="" class="theory">
-              теория
-            </a>
+            <a href="" class="instruction">инструкция</a>
+            <a href="" class="contacts">о нас</a>
+            <a href="" class="theory">теория</a>
           </div>
-          <a href="" class="support">
-            поддержка
-          </a>
+          <a href="" class="support">поддержка</a>
         </div>
-        <h1 class="title_3">
-          Обучающая симуляция
-        </h1>
+        <!-- Начало обучающего режима -->
+        <h1 class="title_3">Обучающая симуляция</h1>
         <h1 class="instruction_text">
           Перед началом работы рекомендуем Вам зайти во вкладку "инструкция". <br>
           Вам предлагается пройти этап обучающей симуляции для 
@@ -38,8 +32,11 @@
           Нажмите кнопку "начать" или пролистайте <br> страницу до введения 
           параметров для пропуска обучения. 
         </h1>
+        <!-- Класс toogle обозначает создание выпадающего списка -->
         <button class="toggle">▼ Базовая модель</button>
+        <!-- content - содержимое списка -->
         <div class="content">
+          <!-- Создание кнопок старта разных режимов и мест для графика и текста -->
           <div class="instruction_button">
             <button class="button" id="start_training_bad">начать спад</button>
             <button class="button" id="start_training_good">начать рост</button>
@@ -52,9 +49,11 @@
           </div>
           <div id="inst_text"></div>
           <div class="start_button">
+            <!-- Кнопка далее обновляет графики -->
             <button class="button" id="next">далее</button>
           </div>
         </div> <br>
+        <!-- Далее аналогичный toogle для второго режима обучающей модели -->
         <button class="toggle">▼ Скорость забывания</button>
         <div class="content">
           <div class="instruction_button">
@@ -72,9 +71,8 @@
             <button class="button" id="next_1">далее</button>
           </div>
         </div>
-        <h1 class="title_3">
-            Введите параметры <br>модели:
-        </h1>
+        <!-- Начало пользовательского режима. Введение параметров -->
+        <h1 class="title_3">Введите параметры <br>модели:</h1>
         <div class="inputs">
             <label for="days">количество дней</label>
             <input type="number" id="days" placeholder="days" value=50>
@@ -100,11 +98,14 @@
             <input type="number" id="news_speed" placeholder="news_speed" value=0.9>
             <input type="number" id="news_p" placeholder="news_p" value=0.1>
             <label for="news_p">вероятность скачка</label>
-        </div>    
+        </div>
+        <!-- Кнопка "начать" для инициализации класса Browser_game -->
         <div class="start_button">
             <button class="button" id="start_button">начать</button>
         </div>
+        <!-- Поле для сообщения об успешности запуска модели -->
         <h1 class="instruction_text" id="starting_text"></h1>
+        <!-- Снова несколько toogle для пользовательской модели. Меняется по сути только расположение canvas и полей для текста -->
         <button class="toggle">▼ Цена акции / новостной фон</button>
         <div class="content">
             <div class="controls">
@@ -132,10 +133,6 @@
               <canvas id="liq_chart" width="600" height="300"></canvas>
               <div id="liq_text"></div>
             </div>
-            <!-- <div class="text_chart">
-              <canvas id="deal_chart" width="600" height="300"></canvas>
-              <div id="deal_text"></div>
-            </div> -->
         </div> <br>
         <button class="toggle">▼ Доходность акции / Волатильность </button>
         <div class="content">
@@ -153,10 +150,12 @@
               <div id="vol_text"></div>
             </div>
         </div>
+        <!-- Завершающее сообщение -->
         <h1 class="instruction_text">
           Надеемся, Вам понравилось наше приложение. Если у вас возникли вопросы, замечания или предложения, <br>
           сообщите нам об этом во вкладке "поддержка" в начале страницы. <br> До новых встреч!
         </h1>
+        <!-- Скрипт - browser_game.js -->
         <script type="module" src="browser_game.js"></script>
     </div>
 </body>

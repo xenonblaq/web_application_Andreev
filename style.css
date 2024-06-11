@@ -1,11 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap');
 
-:root {
-    --color_icons: #003C76
-    --text_color_2: #B1C2FF
-    --text_color_1: #FFFFFF
-    --text_color_3: #E1E6FA
-}
+/* В данном файле каждому классу html документа задается стиль и правила отображения*/
 
 body {
     font-family: 'Comfortaa', sans-serif;
@@ -25,7 +20,6 @@ body {
     justify-content: space-between;
     width: 1358px;
 }
-
 
 .first_1 {
     display: flex;
@@ -185,36 +179,36 @@ body {
     line-height: 45px;
 }
 
-  .inputs {
+.inputs {
     display: grid;
     grid-template-columns: auto 200px 200px auto;
     gap: 30px; 
     justify-content: center;
     align-items: center;
     padding: 30px;
-  }
+}
 
-  .inputs input {
+.inputs input {
     background-color:#B1C2FF; 
     border: none; 
     border-radius: 5px;
     height: 25px; 
-  }
+}
 
-  .inputs label {
+.inputs label {
     color: white;
     border: none;
     height: 25px;
-  }
+}
 
-  .start_button {
+.start_button {
     display: grid;
     place-items: center;
     width: 100%; 
     margin: 20px 0;
-  }
+}
   
-  .button {
+.button {
     background-image: url('/img/start.svg'); 
     background-size: cover; 
     color: white;
@@ -225,13 +219,13 @@ body {
     font-size: 20px; 
     font-family: 'Comfortaa';
     outline: none;
-  }
+}
 
-  canvas { 
+canvas { 
     display: block;
 	background-color: #B1C2FF;
     border-radius: 15px;
-  }
+}
 
 .toggle {
     display: block;
