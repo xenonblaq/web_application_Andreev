@@ -65,7 +65,7 @@ class Company {
             }
         }
         // Добавляем новую новость в массив и обновляем новостной фон
-        this.news.push(news.toFixed(2));
+        this.news.push(news);
         this.news_background = 0
         for (let i = 0; i < this.news.length; i++) {
             this.news_background += this.news[i] * Math.exp(this.news_speed[0] * (i - this.news.length + 1)); // Формула из описания проекта

@@ -388,7 +388,17 @@ class Browser_game {
             chart.chart = this.scatter_chart(canvas, chart.label, chart.X, chart.Y);
             chart.chart.data.datasets[0].data = chart.X.map((x, index) => ({ x, y: chart.Y[index] }));
             chart.chart.update();
-            text.innerText += "Ура!";
+            // Заполнение полей для текста
+            if (chart.Y[0] < chart.Y[chart.Y.length - 1]) {
+                text.innerHTML = "По результатам симуляции параметр '" + chart.label[0] + "' вырос." + '<br>';
+            } else {
+                text.innerHTML = "По результатам симуляции параметр " + chart.label[0] + " упал." + '<br>';
+            }
+            for (let i = 0; i < chart.Y.length; i++) { 
+                if (chart.Y[i] != 0) {
+                    text.innerHTML += String(chart.Y[i].toFixed(2)) + ' ';
+                }
+            }
         });
     }
 
