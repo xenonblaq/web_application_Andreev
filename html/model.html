@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- Импорт библиотеки Chart.js для построения графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Импорт style.css - стилизация документа -->
+    <link rel="stylesheet" href="style.css">
+    <title>Симуляция рынка ценных бумаг</title>
+</head>
+<body>
+    <div class="container">
+      <!-- Создание первой линии страницы, состоящей из ссылок на главную страницу, инструкцию, контактную информацию, теорию и поддержку -->
+        <div class="first"> 
+          <a href="/index.html" class="logo">
+            <img src="img/логотип.svg" alt="логотип">
+          </a>
+          <div class="first_1">
+            <a href="" class="instruction">инструкция</a>
+            <a href="" class="contacts">о нас</a>
+            <a href="" class="theory">теория</a>
+          </div>
+          <a href="" class="support">поддержка</a>
+        </div>
+        <!-- Начало обучающего режима -->
+        <h1 class="title_3">Обучающая симуляция</h1>
+        <h1 class="instruction_text">
+          Перед началом работы рекомендуем Вам зайти во вкладку "инструкция". <br>
+          Вам предлагается пройти этап обучающей симуляции для 
+          понимания работы модели <br> и первого погружения в мир акций.
+          Нажмите кнопку "начать" или пролистайте <br> страницу до введения 
+          параметров для пропуска обучения. 
+        </h1>
+        <!-- Класс toogle обозначает создание выпадающего списка -->
+        <button class="toggle">▼ Базовая модель</button>
+        <!-- content - содержимое списка -->
+        <div class="content">
+          <!-- Создание кнопок старта разных режимов и мест для графика и текста -->
+          <div class="instruction_button">
+            <button class="button" id="start_training_bad">начать спад</button>
+            <button class="button" id="start_training_good">начать рост</button>
+          </div>
+          <div class="instruction_canvas">
+            <canvas class="chart_ins" id="price_chart_ins" width="500" height="220"></canvas>
+            <canvas class="chart_ins" id="return_chart_ins" width="500" height="220"></canvas>
+            <canvas class="chart_ins" id="news_chart_ins" width="500" height="220"></canvas> <br>
+            <canvas class="chart_ins" id="vol_chart_ins" width="500" height="220"></canvas>
+          </div>
+          <div id="inst_text"></div>
+          <div class="start_button">
+            <!-- Кнопка далее обновляет графики -->
+            <button class="button" id="next">далее</button>
+          </div>
+        </div> <br>
+        <!-- Далее аналогичный toogle для второго режима обучающей модели -->
+        <button class="toggle">▼ Скорость забывания</button>
+        <div class="content">
+          <div class="instruction_button">
+            <button class="button" id="start_high_speed">высокая скорость</button>
+            <button class="button" id="start_low_speed">низкая скорость</button>
+          </div>
+          <div class="instruction_canvas">
+            <canvas class="chart_ins" id="price_chart_ins_1" width="500" height="220"></canvas>
+            <canvas class="chart_ins" id="return_chart_ins_1" width="500" height="220"></canvas>
+            <canvas class="chart_ins" id="news_chart_ins_1" width="500" height="220"></canvas> <br>
+            <canvas class="chart_ins" id="vol_chart_ins_1" width="500" height="220"></canvas>
+          </div>
+          <div id="inst_text_1"></div>
+          <div class="start_button">
+            <button class="button" id="next_1">далее</button>
+          </div>
+        </div>
+        <!-- Начало пользовательского режима. Введение параметров -->
+        <h1 class="title_3">Введите параметры <br>модели:</h1>
+        <div class="inputs">
+            <label for="days">количество дней</label>
+            <input type="number" id="days" placeholder="days" value=50>
+            <input type="number" id="volatility" placeholder="volatility" value=0.6>
+            <label for="volatility">текущая волотильность</label>
+          
+            <label for="players">количество игроков</label>
+            <input type="number" id="players" placeholder="players" value=10>
+            <input type="number" id="return" placeholder="return" value=0.01>
+            <label for="return">текущая доходность</label>
+          
+            <label for="stock">количество акций</label>
+            <input type="number" id="stock" placeholder="stock" value=120>
+            <input type="number" id="liquidity" placeholder="liquidity" value=0.01>
+            <label for="liquidity">текущая ликвидность</label>
+          
+            <label for="news">новостной фон</label>
+            <input type="number" id="news" placeholder="news" value=0.01>
+            <input type="number" id="price" placeholder="price" value=300>
+            <label for="price">текущая цена покупки</label>
+
+            <label for="news_speed">скорость забывания</label>
+            <input type="number" id="news_speed" placeholder="news_speed" value=0.9>
+            <input type="number" id="news_p" placeholder="news_p" value=0.1>
+            <label for="news_p">вероятность скачка</label>
+        </div>
+        <!-- Кнопка "начать" для инициализации класса Browser_game -->
+        <div class="start_button">
+            <button class="button" id="start_button">начать</button>
+        </div>
+        <!-- Поле для сообщения об успешности запуска модели -->
+        <h1 class="instruction_text" id="starting_text"></h1>
+        <!-- Снова несколько toogle для пользовательской модели. Меняется по сути только расположение canvas и полей для текста -->
+        <button class="toggle">▼ Цена акции / новостной фон</button>
+        <div class="content">
+            <div class="controls">
+              <button class="button" id="start_1">начать</button>
+              <button class="button" id="pause_1">пауза</button>
+              <button class="button" id="result_1">результат</button>
+            </div>
+            <div class="text_chart">
+              <canvas id="price_chart" width="600" height="300"></canvas>
+              <div id="price_text"></div>
+            </div>
+            <div class="text_chart">
+              <canvas id="news_chart" width="600" height="300"></canvas>
+              <div id="news_text"></div>
+            </div>
+        </div> <br>
+        <button class="toggle">▼ Ликвидность / Количество акций в обороте </button>
+        <div class="content">
+            <div class="controls">
+              <button class="button" id="start_2">начать</button>
+              <button class="button" id="pause_2">пауза</button>
+              <button class="button" id="result_2">результат</button>
+            </div>
+            <div class="text_chart">
+              <canvas id="liq_chart" width="600" height="300"></canvas>
+              <div id="liq_text"></div>
+            </div>
+        </div> <br>
+        <button class="toggle">▼ Доходность акции / Волатильность </button>
+        <div class="content">
+            <div class="controls">
+              <button class="button" id="start_3">начать</button>
+              <button class="button" id="pause_3">пауза</button>
+              <button class="button" id="result_3">результат</button>
+            </div>
+            <div class="text_chart">
+              <canvas id="return_chart" width="600" height="300"></canvas>
+              <div id="return_text"></div>
+            </div>
+            <div class="text_chart">
+              <canvas id="vol_chart" width="600" height="300"></canvas>
+              <div id="vol_text"></div>
+            </div>
+        </div>
+        <!-- Завершающее сообщение -->
+        <h1 class="instruction_text">
+          Надеемся, Вам понравилось наше приложение. Если у вас возникли вопросы, замечания или предложения, <br>
+          сообщите нам об этом во вкладке "поддержка" в начале страницы. <br> До новых встреч!
+        </h1>
+        <!-- Скрипт - browser_game.js -->
+        <script type="module" src="browser_game.js"></script>
+    </div>
+</body>
+</html>
