@@ -3,23 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <title>Симуляция рынка ценных бумаг</title>
 </head>
 <body>
   <div class="container">
-    <!-- Создание первой линии страницы, состоящей из ссылок на главную страницу, инструкцию, контактную информацию, теорию и поддержку -->
+    <!-- Создание первой линии страницы, состоящей из ссылок на гит и открытия почтового клиента для письма -->
     <div class="first"> 
       <a href="/index.html" class="logo">
-        <img src="img/логотип.svg" alt="логотип">
+        <img src="../img/логотип.svg" alt="логотип">
       </a>
       <div class="first_1">
-        <!-- <a href="" class="instruction">инструкция</a>
-        <a href="" class="contacts">о нас</a> -->
         <a href="https://github.com/xenonblaq/web_application_Andreev/blob/main/README.md" class="theory">теория и инструкция</a>
-        <a href="/browser_game.js" class="support">реализация</a>
+        <a href="https://github.com/xenonblaq/web_application_Andreev/tree/main/script" class="contacts">реализация</a>
       </div>
-      <a href="" class="support">поддержка</a>
+      <a href="" class="support" id="support">поддержка</a>
     </div>
     <!-- Вторая линия страницы - заголовок и краткое описание -->
     <div class="second">
@@ -31,8 +29,8 @@
     <!-- Тертья линия - кнопка перехода на страницу с моделью-->
     <div class="third">
       <p class="autro">Начать</p>
-      <a href="/model.html" class="knopka">
-      <img src="img/кнопка.svg" alt="knopka">
+      <a href="./model.html" class="knopka">
+      <img src="../img/кнопка.svg" alt="knopka">
       </a>
     </div>
     <h1 class="title_2">Результаты симуляции</h1>
@@ -53,10 +51,11 @@
     </div>
     <!-- Импорт картинок -->
     <div class="round"></div>
-    <img src="img/модель комп.svg" alt="comp" class="comp">
-    <img src="img/звезда сверху.png" alt="star_1" class="star_1">
-    <img src="img/звезда снизу.png" alt="star_2" class="star_2">
-    <img src="img/звезда справа.png" alt="star_3" class="star_3">
+    <img src="../img/модель комп.svg" alt="comp" class="comp">
+    <img src="../img/звезда сверху.png" alt="star_1" class="star_1">
+    <img src="../img/звезда снизу.png" alt="star_2" class="star_2">
+    <img src="../img/звезда справа.png" alt="star_3" class="star_3">
+    <script type="module" src="../script/support.js"></script>
   </div>
 </body>
 </html>

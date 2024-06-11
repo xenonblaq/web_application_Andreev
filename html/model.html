@@ -6,23 +6,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Импорт style.css - стилизация документа -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <title>Симуляция рынка ценных бумаг</title>
 </head>
 <body>
     <div class="container">
-      <!-- Создание первой линии страницы, состоящей из ссылок на главную страницу, инструкцию, контактную информацию, теорию и поддержку -->
-        <div class="first"> 
-          <a href="/index.html" class="logo">
-            <img src="img/логотип.svg" alt="логотип">
-          </a>
-          <div class="first_1">
-            <a href="" class="instruction">инструкция</a>
-            <a href="" class="contacts">о нас</a>
-            <a href="" class="theory">теория</a>
-          </div>
-          <a href="" class="support">поддержка</a>
+      <!-- Создание первой линии страницы, состоящей из ссылок на гит и открытия почтового клиента для письма -->
+      <div class="first"> 
+        <a href="/index.html" class="logo">
+          <img src="../img/логотип.svg" alt="логотип">
+        </a>
+        <div class="first_1">
+          <a href="https://github.com/xenonblaq/web_application_Andreev/blob/main/README.md" class="theory">теория и инструкция</a>
+          <a href="https://github.com/xenonblaq/web_application_Andreev/tree/main/script" class="contacts">реализация</a>
         </div>
+        <a href="" class="support" id="support">поддержка</a>
+      </div>
         <!-- Начало обучающего режима -->
         <h1 class="title_3">Обучающая симуляция</h1>
         <h1 class="instruction_text">
@@ -156,7 +155,8 @@
           сообщите нам об этом во вкладке "поддержка" в начале страницы. <br> До новых встреч!
         </h1>
         <!-- Скрипт - browser_game.js -->
-        <script type="module" src="browser_game.js"></script>
+        <script type="module" src="../script/browser_game.js"></script>
+        <script type="module" src="../script/support.js"></script>
     </div>
 </body>
 </html>
