@@ -209,7 +209,7 @@ body {
 }
   
 .button {
-    background-image: url('/img/start.svg'); 
+    background-image: url('../img/start.svg'); 
     background-size: cover; 
     color: white;
     padding: 10px 20px; 
