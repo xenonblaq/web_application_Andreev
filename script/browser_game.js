@@ -246,10 +246,10 @@ class Browser_game {
         // У обоих режимов обучающей модели есть свои поля для текста. Поиск и начальное заполнение данных полей
         let text = document.getElementById(preset.text);
         text.innerHTML = 'Модель готова к работе. Нажмите кнопку "далее".' + '<br>';
-        text.innerHTML += "Текщая цена акции: " + String(this.preset_game[0].Y[this.preset_game[0].index - 1].toFixed(2)) + '<br>';
+        text.innerHTML += "Текущая цена акции: " + String(this.preset_game[0].Y[this.preset_game[0].index - 1].toFixed(2)) + '<br>';
         text.innerHTML += "Новость сегодняшнего дня: " + String(this.preset_game[1].Y[this.preset_game[1].index - 1]) + '<br>';
-        text.innerHTML += "Текщая доходность: " + String(this.preset_game[2].Y[this.preset_game[2].index - 1].toFixed(2)) + '<br>';
-        text.innerHTML += "Текщая волотильность: " + String(this.preset_game[3].Y[this.preset_game[3].index - 1].toFixed(2)) + '<br>';
+        text.innerHTML += "Текущая доходность: " + String(this.preset_game[2].Y[this.preset_game[2].index - 1].toFixed(2)) + '<br>';
+        text.innerHTML += "Текущая волатильность: " + String(this.preset_game[3].Y[this.preset_game[3].index - 1].toFixed(2)) + '<br>';
     }
 
     // Функция обновления графиков по нажатии кнопки "далее"
@@ -476,8 +476,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } if (news > 1 || news < 0) {
             alert("Недопустимые параметры: новостной фон - число от нуля до единицы");
             return;
-        } if (ret > 1 || ret < 0) {
-            alert("Недопустимые параметры: доходность - число от нуля до единицы");
+        } if (ret > 1 || ret < -1) {
+            alert("Недопустимые параметры: доходность - число от минус единицы до единицы");
             return;
         } if (news_p > 1 || news_p < 0) {
             alert("Недопустимые параметры: вероятность скачка - число от нуля до единицы");
@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Недопустимые параметры: скорость забывания - число от нуля до единицы");
             return;
         } if (vol > 1 || vol < 0) {
-            alert("Недопустимые параметры: волотильность - число от нуля до единицы");
+            alert("Недопустимые параметры: волатильность - число от нуля до единицы");
             return;
         }
         // Инициализация класса Browser_game и вывод сообщения об ее успешности
