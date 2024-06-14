@@ -263,10 +263,10 @@ class Browser_game {
                 game.index += 1; // Увеличение индекса
             });
             // Заполнение поля для текста текущими данными
-            text.innerHTML += "Текщая цена акции: " + String(this.preset_game[0].Y[this.preset_game[0].index - 1].toFixed(2)) + '<br>';
+            text.innerHTML += "Текущая цена акции: " + String(this.preset_game[0].Y[this.preset_game[0].index - 1].toFixed(2)) + '<br>';
             text.innerHTML += "Новость сегодняшнего дня : " + String(this.preset_game[1].Y[this.preset_game[1].index - 1]) + '<br>';
-            text.innerHTML += "Текщая доходность: " + String(this.preset_game[2].Y[this.preset_game[2].index - 1].toFixed(2)) + '<br>';
-            text.innerHTML += "Текщая волотильность :" + String(this.preset_game[3].Y[this.preset_game[3].index - 1].toFixed(2)) + '<br>';
+            text.innerHTML += "Текущая доходность: " + String(this.preset_game[2].Y[this.preset_game[2].index - 1].toFixed(2)) + '<br>';
+            text.innerHTML += "Текущая волатильность :" + String(this.preset_game[3].Y[this.preset_game[3].index - 1].toFixed(2)) + '<br>';
         } else {
             // Все точки были добавлены. Конец
             text.innerHTML = 'Обучающая симуляция завершена. Перезагрузите страницу для начала новой или снова используйте кнопки "начать" для ускорения темпа.';
